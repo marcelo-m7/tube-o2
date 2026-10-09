@@ -319,6 +319,28 @@ Deno.serve(async (req: Request) => {
     reasons: [] as string[],
   };
 
+  // An ID-only import is not evidence of any educational category.
+  const metadataPending = video.title.trim().toLowerCase() === youtubeId.toLowerCase()
+    && !video.description?.trim()
+    && (!video.channel_name?.trim() || video.channel_name.trim().toLowerCase() === 'youtube');
+
+  if (metadataPending) {
+    const { data: uncategorized, error: categoryLookupError } = await supabase
+      .from('categories').select('id').eq('slug', 'nao-classificados').maybeSingle();
+    if (categoryLookupError) {
+      console.warn('[import-video] Pending category unavailable:', categoryLookupError.message);
+    }
+    if (uncategorized?.id && !video.category_id) {
+      const { error: categoryWriteError } = await supabase.from('videos')
+        .update({ category_id: uncategorized.id })
+        .eq('id', video.id).is('category_id', null);
+      if (categoryWriteError) {
+        console.warn('[import-video] Pending category assignment failed:', categoryWriteError.message);
+      }
+    }
+    association.assignedCategoryId = video.category_id ?? uncategorized?.id ?? null;
+    association.reasons = ['metadata_pending: await verified video content'];
+  } else {
   try {
     const categories = await loadAssociationCategories(supabase);
     const playlists = await loadAssociationPlaylists(
@@ -364,6 +386,8 @@ Deno.serve(async (req: Request) => {
       ...association,
       reasons: [`association_error:${errorMessage}`],
     };
+  }
+
   }
 
   return jsonResponse(req, {
