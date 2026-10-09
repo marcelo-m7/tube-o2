@@ -418,7 +418,7 @@ const VideoDetails = () => {
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">{t('videoDetails.aiSummaryTitle')}</h3>
                         <div className="flex flex-wrap items-center justify-end gap-2">
-                          <Badge variant="secondary" className="gap-1.5">
+                          <Badge variant="secondary" className="gap-1.5 bg-muted text-foreground border-border">
                             {analysisJob?.status === 'completed' ? (
                               <CheckCircle2 className="h-3 w-3" />
                             ) : (
@@ -436,17 +436,17 @@ const VideoDetails = () => {
                       )}
                     
                       {video.enrichment.short_summary && (
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <p className="text-sm text-foreground/90 leading-relaxed">
                           {video.enrichment.short_summary}
                         </p>
                       )}
                     
                       {video.enrichment.summary_description && video.enrichment.summary_description !== video.enrichment.short_summary && (
                         <details className="group">
-                          <summary className="text-sm text-primary cursor-pointer hover:underline">
+                          <summary className="text-sm font-semibold text-foreground underline underline-offset-4 cursor-pointer hover:text-foreground/80">
                             {t('videoDetails.readFullSummary')}
                           </summary>
-                          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                          <p className="text-sm text-foreground/90 mt-2 leading-relaxed">
                             {video.enrichment.summary_description}
                           </p>
                         </details>
@@ -472,7 +472,7 @@ const VideoDetails = () => {
                     </div>
                     <div className="flex-1 space-y-2">
                       <h3 className="text-lg font-semibold">{t('videoDetails.transcriptSummaryTitle')}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      <p className="text-sm text-foreground/90 leading-relaxed">
                         {video.transcriptSummary}
                       </p>
                     </div>
