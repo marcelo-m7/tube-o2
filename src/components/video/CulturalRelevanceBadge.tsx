@@ -21,17 +21,17 @@ export function CulturalRelevanceBadge({
     high: {
       icon: <Flame className="w-3 h-3" />,
       label: 'High Relevance',
-      colorClasses: 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900 dark:text-red-300',
+      colorClasses: 'bg-red-100 !text-red-950 border-red-400 dark:bg-red-950 dark:!text-red-100 dark:border-red-700',
     },
     medium: {
       icon: <TrendingUp className="w-3 h-3" />,
       label: 'Medium Relevance',
-      colorClasses: 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900 dark:text-yellow-300',
+      colorClasses: 'bg-amber-100 !text-amber-950 border-amber-500 dark:bg-amber-950 dark:!text-amber-100 dark:border-amber-600',
     },
     low: {
       icon: <Minus className="w-3 h-3" />,
       label: 'Low Relevance',
-      colorClasses: 'bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-900 dark:text-gray-300',
+      colorClasses: 'bg-slate-100 !text-slate-950 border-slate-400 dark:bg-slate-900 dark:!text-slate-100 dark:border-slate-600',
     },
   };
   
