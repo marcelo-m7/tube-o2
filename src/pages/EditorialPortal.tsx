@@ -14,7 +14,8 @@ import { useVideoAnalysisJobs } from '@/features/video-analysis/useVideoAnalysis
 import { usePlaylists } from '@/features/playlists/queries/usePlaylists';
 import { useIsEditor } from '@/features/profile/queries/useProfile';
 import { getReliableYouTubeThumbnailUrl } from '@/shared/lib/youtube';
-import { ArrowLeft, ListVideo, Plus, Search } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { ArrowLeft, ListVideo, Plus, Search, RefreshCw } from 'lucide-react';
 
 const EditorialPortal = () => {
   const { t } = useTranslation();
@@ -24,6 +25,46 @@ const EditorialPortal = () => {
   const { data: playlists, isLoading: playlistsLoading, isError } = usePlaylists();
   const { data: analysisJobs, isLoading: analysisJobsLoading } = useVideoAnalysisJobs({ limit: 6 });
   const [query, setQuery] = useState('');
+  type RecoveryItem = {
+    youtube_id: string;
+    status: string;
+    patch?: { title?: string; channel_name?: string };
+    updated?: { title?: string; channel_name?: string } | null;
+    reason?: string;
+  };
+  const [recoveryBusy, setRecoveryBusy] = useState(false);
+  const [recoveryResults, setRecoveryResults] = useState<RecoveryItem[] | null>(null);
+  const [recoveryError, setRecoveryError] = useState<string | null>(null);
+  const [recoveryPreviewed, setRecoveryPreviewed] = useState(false);
+
+  const runMetadataRecovery = async (dryRun: boolean) => {
+    if (recoveryBusy) return;
+    if (!dryRun && !recoveryPreviewed) {
+      setRecoveryError('Execute primeiro a simulação para verificar os metadados.');
+      return;
+    }
+    setRecoveryBusy(true);
+    setRecoveryError(null);
+    setRecoveryResults(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('recover-video-metadata', {
+        body: { dry_run: dryRun, limit: 5 },
+      });
+      if (error) throw error;
+      if (!data || !Array.isArray(data.results)) {
+        throw new Error('Resposta inesperada do serviço de recuperação.');
+      }
+      setRecoveryResults(data.results as RecoveryItem[]);
+      if (dryRun) setRecoveryPreviewed(true);
+      else setRecoveryPreviewed(false);
+    } catch (error) {
+      setRecoveryPreviewed(false);
+      setRecoveryError(error instanceof Error ? error.message : 'Não foi possível recuperar os metadados.');
+    } finally {
+      setRecoveryBusy(false);
+    }
+  };
+
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -129,6 +170,45 @@ const EditorialPortal = () => {
             <p className="text-2xl font-bold mt-1">{pendingAnalysisCount}</p>
           </div>
         </div>
+
+        <section aria-labelledby="metadata-recovery-heading" className="border border-border bg-card p-5 space-y-4">
+          <div className="flex flex-col gap-1">
+            <h2 id="metadata-recovery-heading" className="text-xl font-bold">Recuperar metadados do YouTube</h2>
+            <p className="text-sm text-muted-foreground">
+              Recupera títulos e canais originais para vídeos com informações provisórias.
+              Preserva alterações manuais. Executa até cinco vídeos por lote.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" disabled={recoveryBusy}
+              onClick={() => void runMetadataRecovery(true)}>
+              {recoveryBusy ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Simular lote
+            </Button>
+            <Button type="button" disabled={recoveryBusy || !recoveryPreviewed}
+              onClick={() => void runMetadataRecovery(false)}>
+              {recoveryBusy ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Aplicar recuperação
+            </Button>
+          </div>
+          {recoveryError && <p role="alert" className="text-sm text-destructive">{recoveryError}</p>}
+          {recoveryResults && (
+            <div aria-live="polite" className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                {recoveryResults.length} vídeo(s) verificado(s).
+                {recoveryPreviewed ? ' Pré-visualização: nenhuma alteração aplicada.' : ' Operação concluída.'}
+              </p>
+              {recoveryResults.length === 0 && <p className="text-sm text-muted-foreground">Não foram encontrados vídeos elegíveis neste lote.</p>}
+              {recoveryResults.map((item) => (
+                <div key={item.youtube_id} className="flex flex-wrap items-center gap-2 border border-border p-2 text-sm">
+                  <span className="font-mono">{item.youtube_id}</span>
+                  <Badge variant="outline">{item.status}</Badge>
+                  <span className="break-words">{item.patch?.title ?? item.updated?.title ?? item.reason ?? ''}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         <section className="space-y-4">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
