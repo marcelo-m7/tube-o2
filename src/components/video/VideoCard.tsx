@@ -28,6 +28,9 @@ const VideoCardComponent = ({ video, onClick, onTagClick, variant = 'default' }:
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { viewCount, showPlus, handleViewIncrement } = useVideoViewIncrement(video.view_count || 0);
+  const displayTitle = !video.title?.trim() || video.title.trim().toLowerCase() === video.youtube_id?.toLowerCase()
+    ? 'Título indisponível — metadados pendentes'
+    : video.title;
   const hasOptimizedTitleTooltip = !!video.enrichment?.optimized_title && video.enrichment.optimized_title !== video.title;
   const normalizedLanguage = (video.language || '').toLowerCase();
   const languageLabel =
@@ -63,7 +66,7 @@ const VideoCardComponent = ({ video, onClick, onTagClick, variant = 'default' }:
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="link"
-      aria-label={video.title}
+      aria-label={displayTitle}
       className={cn(
         "group cursor-pointer bg-card overflow-hidden transition-colors border border-border hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         variant === 'default' && "flex h-full min-h-[320px] flex-col",
@@ -77,7 +80,7 @@ const VideoCardComponent = ({ video, onClick, onTagClick, variant = 'default' }:
       )}>
         <LazyImage
           src={getReliableYouTubeThumbnailUrl(video.thumbnail_url, '/placeholder.svg')}
-          alt={video.title}
+          alt={displayTitle}
           fallbackSrc="/placeholder.svg"
           className="w-full h-full object-cover transition-transform duration-200 motion-safe:group-hover:scale-[1.02]"
         />
@@ -125,7 +128,7 @@ const VideoCardComponent = ({ video, onClick, onTagClick, variant = 'default' }:
       {/* Content */}
       <div className={cn(
         "flex flex-col",
-        variant === 'default' ? "flex-1 space-y-3 p-4" : "flex-1 space-y-1"
+        variant === 'default' ? "flex-1 space-y-3 p-4" : "min-w-0 flex-1 space-y-1"
       )}>
           {hasOptimizedTitleTooltip ? (
             <Tooltip delayDuration={200}>
@@ -134,7 +137,7 @@ const VideoCardComponent = ({ video, onClick, onTagClick, variant = 'default' }:
                   "font-semibold leading-snug line-clamp-2 group-hover:opacity-75 transition-opacity uppercase tracking-[0.05em]",
                   variant === 'default' ? "text-sm" : "text-xs"
                 )}>
-                  {video.title}
+                  {displayTitle}
                 </h3>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs">
@@ -147,7 +150,7 @@ const VideoCardComponent = ({ video, onClick, onTagClick, variant = 'default' }:
               "font-semibold leading-snug line-clamp-2 group-hover:opacity-75 transition-opacity uppercase tracking-[0.05em]",
               variant === 'default' ? "text-sm" : "text-xs"
             )}>
-              {video.title}
+              {displayTitle}
             </h3>
           )}
         
