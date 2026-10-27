@@ -1,4 +1,18 @@
 {
+  "facodiKnowledge": {
+    "back": "Voltar à FACODI", "openAtlas": "Atlas curricular", "signIn": "Iniciar sessão", "eyebrow": "FACODI · Inteligência curricular",
+    "title": "Atlas curricular", "subtitle": "Explora os programas de estudo e descobre que cursos da FACODI apoiam cada unidade curricular. Apenas associações aprovadas são apresentadas.",
+    "sourceLabel": "Fonte de referência", "sourceDetail": "Odoo 19 · FACODI Learning", "programme": "Escolher programa", "officialSource": "Consultar fonte oficial",
+    "coverageTitle": "Cobertura editorial", "coverageChartLabel": "{{percent}} por cento de unidades com cobertura direta", "directCoverage": "Cobertura direta",
+    "disclaimer": "A cobertura é editorial e não representa equivalência académica, ECTS ou reconhecimento de créditos.",
+    "curriculumLabel": "Programa de estudos", "unitsTitle": "Unidades curriculares", "search": "Pesquisar unidades...", "year": "{{number}}.º ano",
+    "relatedCourses": "Cursos FACODI associados", "noCourse": "Ainda não há cursos aprovados associados a esta unidade.", "noUnits": "Não foram encontradas unidades para este filtro.",
+    "metric": {"units":"Unidades", "covered":"Cobertas", "partial":"Apoio parcial", "missing":"Por mapear"},
+    "coverage": {"covered":"Coberta", "partial":"Apoio parcial", "missing":"Por mapear"},
+    "empty": {"title":"Nenhum referencial publicado", "description":"Os programas curriculares serão apresentados quando forem publicados e validados no FACODI Learning."},
+    "error": {"title":"Ligação curricular indisponível", "description":"A integração com o Odoo está temporariamente indisponível. Tenta novamente dentro de momentos."},
+    "authentication": {"title":"Inicia sessão para consultar o Atlas", "description":"O Atlas curricular está disponível para utilizadores autenticados da FACODI."}
+  },
   "common": {
     "back": "Voltar",
     "language": {

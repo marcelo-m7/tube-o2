@@ -1,4 +1,18 @@
 {
+  "facodiKnowledge": {
+    "back":"Retour à FACODI","openAtlas":"Atlas des programmes","signIn":"Se connecter","eyebrow":"FACODI · Intelligence des programmes",
+    "title":"Atlas des programmes","subtitle":"Explorez les programmes d'études et les cours FACODI associés à chaque unité. Seules les correspondances validées sont affichées.",
+    "sourceLabel":"Source de référence","sourceDetail":"Odoo 19 · FACODI Learning","programme":"Choisir un programme","officialSource":"Consulter la source officielle",
+    "coverageTitle":"Couverture éditoriale","coverageChartLabel":"{{percent}} pour cent des unités ont une couverture directe","directCoverage":"Couverture directe",
+    "disclaimer":"La couverture est éditoriale et ne constitue pas une équivalence académique, des ECTS ou une reconnaissance de crédits.",
+    "curriculumLabel":"Programme d'études","unitsTitle":"Unités d'enseignement","search":"Rechercher des unités...","year":"Année {{number}}",
+    "relatedCourses":"Cours FACODI associés","noCourse":"Aucun cours validé n'est encore associé à cette unité.","noUnits":"Aucune unité ne correspond à ce filtre.",
+    "metric":{"units":"Unités","covered":"Couvertes","partial":"Soutien partiel","missing":"Non associées"},
+    "coverage":{"covered":"Couverte","partial":"Soutien partiel","missing":"Non associée"},
+    "empty":{"title":"Aucun programme publié","description":"Les programmes apparaîtront après publication et validation dans FACODI Learning."},
+    "error":{"title":"Connexion aux programmes indisponible","description":"L'intégration Odoo est temporairement indisponible. Veuillez réessayer dans un instant."},
+    "authentication":{"title":"Connectez-vous pour accéder à l'Atlas","description":"L'Atlas des programmes est accessible aux utilisateurs FACODI connectés."}
+  },
   "common": {
     "back": "Retour",
     "language": {

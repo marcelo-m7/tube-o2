@@ -33,6 +33,8 @@ export default defineConfig(({ mode, command }) => {
       }) as PluginOption),
       VitePWA({
         registerType: 'autoUpdate',
+        // Cloudflare Access preview origins require credentials for manifest reads.
+        useCredentials: true,
         manifest: {
           name: 'Tube O2',
           short_name: 'Tube O2',

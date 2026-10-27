@@ -47,3 +47,6 @@ verify_jwt = true
 
 [functions.mark-top-featured]
 verify_jwt = true
+
+[functions.facodi-curriculum]
+verify_jwt = true

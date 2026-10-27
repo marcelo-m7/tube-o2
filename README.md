@@ -575,6 +575,10 @@ Nothing creepy. No ads. No surveillance.
 
 ## 🆘 Running Into Problems?
 
+### FACODI curriculum pilot
+
+The isolated `/facodi/knowledge` route reads approved, published Odoo 19 curriculum data through the authenticated Supabase Edge Function `facodi-curriculum`. Operational setup, security boundaries and acceptance checks are documented in [docs/features/facodi-curriculum.md](docs/features/facodi-curriculum.md). This pilot does not change the existing `/facodi` experience.
+
 ### Port Already In Use?
 ```bash
 bun run dev -- --port 3000
