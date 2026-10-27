@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 21343)
-Total output lines: 1813
-
 {
   "facodiKnowledge": {
     "back":"Volver a FACODI","openAtlas":"Atlas curricular","signIn":"Iniciar sesión","eyebrow":"FACODI · Inteligencia curricular",
@@ -888,7 +885,128 @@ Total output lines: 1813
     "cta": {
       "title": "Entra por la puerta correcta",
       "description": "Aprende, contribuye con vídeos o ayuda a curar el acervo público.",
- …1343 tokens truncated…youtube.com/playlist?list=...",
+      "cards": {
+        "learners": {
+          "title": "Aprender ahora",
+          "description": "Explora vídeos por categoría, idioma, duración y resumen antes de mirar."
+        },
+        "contributors": {
+          "title": "Enviar referencia",
+          "description": "Sugiere vídeos públicos de YouTube para enriquecer el acervo."
+        },
+        "editors": {
+          "title": "Postular como editor",
+          "description": "Ayuda a revisar, organizar y cualificar playlists y rutas."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "¿Tienes un vídeo que merece convertirse en aprendizaje?",
+      "description": "Envía una referencia pública y ayuda a Tube O2 a crecer con contexto, categorías y curaduría.",
+      "submit": "Enviar vídeo",
+      "editor": "Quiero curar"
+    },
+    "error": "No fue posible cargar la curaduría pública ahora. Mostramos la estructura de la página mientras intentamos nuevamente.",
+    "live": {
+      "label": "En vivo"
+    },
+    "learningRails": {
+      "title": "Caminos de aprendizaje",
+      "description": "Rutas con miniaturas reales, contexto curricular y secuencia para estudiar sin perderse en el feed.",
+      "cta": "Abrir FACODI",
+      "facodi": {
+        "title": "Fundamentos académicos para pensar mejor",
+        "description": "Rutas FACODI con curaduría, curso y unidad en un solo lugar."
+      },
+      "lesti": {
+        "title": "Tecnología con propósito y visión de futuro",
+        "description": "Caminos LESTI para programar, analizar datos y construir sistemas con intención."
+      },
+      "open": {
+        "title": "Colecciones abiertas de la comunidad",
+        "description": "Buenos enlaces se convierten en rutas públicas, con resumen y categoría antes del play."
+      }
+    },
+    "videoRails": {
+      "trendingNow": {
+        "title": "En tendencia ahora",
+        "description": "Videos destacados con mayor relevancia para descubrir en este momento."
+      },
+      "freshDrops": {
+        "title": "Novedades",
+        "description": "Contenido recientemente publicado que llega al catalogo publico."
+      },
+      "mostViewed": {
+        "title": "Mas vistos",
+        "description": "Los videos que concentran mas visualizaciones de la comunidad."
+      },
+      "communityPicks": {
+        "title": "Elegidos por la comunidad",
+        "description": "Videos con mas favoritos y guardados en playlists de aprendizaje."
+      },
+      "withSummaries": {
+        "title": "Con resumen listo",
+        "description": "Videos que ya tienen resumen contextual para decidir antes del play."
+      },
+      "quickLessons": {
+        "title": "Lecciones rapidas",
+        "description": "Contenido corto para sesiones de estudio practicas y objetivas."
+      }
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "description": "¡Ups! Página no encontrada",
+    "returnHome": "Volver a Inicio"
+  },
+  "community": {
+    "title": "Comunidad",
+    "description": "Conéctate con otros curadores y entusiastas de videos.",
+    "totalContributors": "Total de Contribuidores",
+    "contributorsCount": "{{count}} usuarios",
+    "allUsers": "Todos los Usuarios",
+    "submissionsCount": "{{count}} envíos",
+    "loadUsersError": "Error al cargar usuarios de la comunidad. Por favor, inténtalo de nuevo más tarde.",
+    "noUsersFoundTitle": "No se encontraron usuarios.",
+    "noUsersFoundDescription": "Parece que aún no hay usuarios en la comunidad. ¡Sé el primero en unirte!",
+    "createFirstPlaylist": "Crea tu primera playlist"
+  },
+  "playlists": {
+    "title": "Listas de Reproducción",
+    "description": "Rutas de aprendizaje curadas y colecciones de videos.",
+    "searchPlaceholder": "Buscar listas de reproducción...",
+    "createPlaylist": "Crear Lista de Reproducción",
+    "videoCount": "{{count}} videos",
+    "noDescription": "No se proporcionó ninguna descripción.",
+    "noPlaylistsTitle": "No se encontraron listas de reproducción.",
+    "noPlaylistsDescription": "¡Sé el primero en crear una lista de reproducción y organizar el conocimiento!",
+    "createFirstPlaylist": "Crear tu primera lista de reproducción",
+    "loadingErrorTitle": "Error al cargar listas de reproducción",
+    "loadingErrorDescription": "No se pudieron cargar las listas de reproducción. Por favor, inténtalo de nuevo más tarde.",
+    "learningPath": "Ruta de Aprendizaje",
+    "collection": "Colección",
+    "progress": "Progreso",
+    "filter": {
+      "all": "Todas las Listas",
+      "myPlaylists": "Mis Listas",
+      "collaborating": "Colaborando",
+      "allCourseCodes": "Todos los cursos",
+      "allSemesters": "Todos los semestres",
+      "allLanguages": "Todos los idiomas",
+      "allTypes": "Todos los tipos",
+      "allVideoRanges": "Todas las cantidades de videos",
+      "withVideos": "Con videos",
+      "emptyVideos": "Listas vacías",
+      "videos1to9": "1 a 9 videos",
+      "videos10plus": "10+ videos"
+    },
+    "import": {
+      "button": "Importar videos de YouTube",
+      "title": "Importar videos de una playlist de YouTube",
+      "description": "Pega la URL de una playlist de YouTube para enviar sus videos al flujo normal de enriquecimiento y asignación educativa de Tube O2.",
+      "form": {
+        "urlLabel": "URL de la Lista de Reproducción de YouTube",
+        "urlPlaceholder": "https://www.youtube.com/playlist?list=...",
         "importButton": "Importar videos",
         "importingButton": "Importando..."
       },

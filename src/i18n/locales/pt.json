@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 20947)
-Total output lines: 1813
-
 {
   "facodiKnowledge": {
     "back": "Voltar à FACODI", "openAtlas": "Atlas curricular", "signIn": "Iniciar sessão", "eyebrow": "FACODI · Inteligência curricular",
@@ -906,7 +903,94 @@ Total output lines: 1813
     },
     "learningRails": {
       "title": "Caminhos de aprendizagem",
-      "description": "Trilhas com thumbnails reais, contexto curricular e sequência para estudar sem se perder no feed…947 tokens truncated… "Todos os cursos",
+      "description": "Trilhas com thumbnails reais, contexto curricular e sequência para estudar sem se perder no feed.",
+      "cta": "Abrir FACODI",
+      "facodi": {
+        "title": "Fundamentos acadêmicos para pensar melhor",
+        "description": "Roteiros FACODI com curadoria, curso e unidade no mesmo lugar."
+      },
+      "lesti": {
+        "title": "Tecnologia com propósito e visão de futuro",
+        "description": "Caminhos LESTI para programar, analisar dados e construir sistemas com cabeça."
+      },
+      "open": {
+        "title": "Coleções abertas da comunidade",
+        "description": "Bons links viram percursos públicos, com resumo e categoria antes do play."
+      }
+    },
+    "videoRails": {
+      "trendingNow": {
+        "title": "Em alta agora",
+        "description": "Videos em destaque com maior relevancia para descoberta neste momento."
+      },
+      "freshDrops": {
+        "title": "Novidades",
+        "description": "Conteudos recem-publicados que chegaram ao catalogo publico."
+      },
+      "mostViewed": {
+        "title": "Mais assistidos",
+        "description": "Os videos que concentram mais visualizacoes na comunidade."
+      },
+      "communityPicks": {
+        "title": "Escolhas da comunidade",
+        "description": "Videos com mais favoritos e adicoes em playlists de aprendizagem."
+      },
+      "withSummaries": {
+        "title": "Com resumo pronto",
+        "description": "Videos que ja contam com resumo contextual para decidir antes do play."
+      },
+      "quickLessons": {
+        "title": "Aulas rapidas",
+        "description": "Conteudos curtos para sessoes de estudo objetivas e praticas."
+      }
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "description": "Oops! Página não encontrada",
+    "returnHome": "Voltar para Home"
+  },
+  "favorites": {
+    "title": "Meus Favoritos",
+    "description": "Todos os vídeos que você salvou para assistir mais tarde.",
+    "loadingErrorTitle": "Erro ao carregar favoritos",
+    "loadingErrorDescription": "Não foi possível carregar seus vídeos favoritos. Por favor, tente novamente mais tarde.",
+    "noFavoritesTitle": "Nenhum vídeo favorito ainda.",
+    "noFavoritesDescription": "Comece a explorar e salve seus vídeos favoritos!",
+    "exploreVideos": "Explorar Vídeos"
+  },
+  "community": {
+    "title": "Comunidade",
+    "description": "Conecte-se com outros curadores e entusiastas de vídeo.",
+    "totalContributors": "Total de Contribuidores",
+    "contributorsCount": "{{count}} usuários",
+    "allUsers": "Todos os Usuários",
+    "submissionsCount": "{{count}} envios",
+    "loadUsersError": "Falha ao carregar usuários da comunidade. Por favor, tente novamente mais tarde.",
+    "noUsersFoundTitle": "Nenhum usuário encontrado.",
+    "noUsersFoundDescription": "Parece que ainda não há usuários na comunidade. Seja o primeiro a se juntar!",
+    "createFirstPlaylist": "Criar sua primeira playlist"
+  },
+  "playlists": {
+    "title": "Playlists",
+    "description": "Caminhos de aprendizado curados e coleções de vídeos.",
+    "searchPlaceholder": "Buscar playlists...",
+    "createPlaylist": "Criar Playlist",
+    "videoCount": "{{count}} vídeos",
+    "noDescription": "Nenhuma descrição fornecida.",
+    "noPlaylistsTitle": "Nenhuma playlist encontrada.",
+    "noPlaylistsDescription": "Seja o primeiro a criar uma playlist e organizar o conhecimento!",
+    "createFirstPlaylist": "Criar sua primeira playlist",
+    "loadingErrorTitle": "Erro ao carregar playlists",
+    "loadingErrorDescription": "Não foi possível carregar as playlists. Por favor, tente novamente mais tarde.",
+    "learningPath": "Caminho de Aprendizado",
+    "collection": "Coleção",
+    "progress": "Progresso",
+    "filter": {
+      "all": "Todas as Playlists",
+      "myPlaylists": "Minhas Playlists",
+      "collaborating": "Colaborando",
+      "allCourseCodes": "Todos os cursos",
       "allSemesters": "Todos os semestres",
       "allLanguages": "Todos os idiomas",
       "allTypes": "Todos os tipos",
