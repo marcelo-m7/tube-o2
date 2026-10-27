@@ -1,4 +1,20 @@
+Warning: truncated output (original token count: 22041)
+Total output lines: 1813
+
 {
+  "facodiKnowledge": {
+    "back":"Retour à FACODI","openAtlas":"Atlas des programmes","signIn":"Se connecter","eyebrow":"FACODI · Intelligence des programmes",
+    "title":"Atlas des programmes","subtitle":"Explorez les programmes d'études et les cours FACODI associés à chaque unité. Seules les correspondances validées sont affichées.",
+    "sourceLabel":"Source de référence","sourceDetail":"Odoo 19 · FACODI Learning","programme":"Choisir un programme","officialSource":"Consulter la source officielle",
+    "coverageTitle":"Couverture éditoriale","coverageChartLabel":"{{percent}} pour cent des unités ont une couverture directe","directCoverage":"Couverture directe",
+    "disclaimer":"La couverture est éditoriale et ne constitue pas une équivalence académique, des ECTS ou une reconnaissance de crédits.",
+    "curriculumLabel":"Programme d'études","unitsTitle":"Unités d'enseignement","search":"Rechercher des unités...","year":"Année {{number}}",
+    "relatedCourses":"Cours FACODI associés","noCourse":"Aucun cours validé n'est encore associé à cette unité.","noUnits":"Aucune unité ne correspond à ce filtre.",
+    "metric":{"units":"Unités","covered":"Couvertes","partial":"Soutien partiel","missing":"Non associées"},
+    "coverage":{"covered":"Couverte","partial":"Soutien partiel","missing":"Non associée"},
+    "empty":{"title":"Aucun programme publié","description":"Les programmes apparaîtront après publication et validation dans FACODI Learning."},
+    "error":{"title":"Connexion aux programmes indisponible","description":"Connectez-vous pour consulter les programmes. Si le problème persiste, l'intégration Odoo est peut-être encore en cours de configuration."}
+  },
   "common": {
     "back": "Retour",
     "language": {
@@ -839,178 +855,7 @@
       "description": "Des parcours curriculaires montrant comment Tube O2 soutient les trajets d’étude pour FACODI/LESTI.",
       "cta": "Ouvrir le parcours"
     },
-    "curation": {
-      "title": "Curation IA + humaine",
-      "description": "La plateforme combine métadonnées, résumés, tags, transcriptions et revue éditoriale pour réduire le bruit sans perdre le contexte.",
-      "panelTitle": "Comment le contenu prend forme",
-      "signals": {
-        "with_summaries": "Vidéos avec résumé",
-        "with_tags": "Vidéos avec tags",
-        "transcripts_completed": "Transcriptions terminées",
-        "recent_submissions": "Envois récents"
-      },
-      "steps": {
-        "summary": {
-          "title": "Résumé actionnable",
-          "description": "Chaque vidéo peut recevoir une synthèse courte avant lecture."
-        },
-        "tags": {
-          "title": "Tags et catégories",
-          "description": "Des signaux sémantiques relient thèmes, langues et objectifs d’apprentissage."
-        },
-        "review": {
-          "title": "Revue éditoriale",
-          "description": "Des éditeurs affinent la pertinence, la confidentialité et la qualité du catalogue."
-        },
-        "paths": {
-          "title": "Parcours d’étude",
-          "description": "Playlists et parcours FACODI transforment la découverte en progression."
-        }
-      },
-      "cta": "Voir le fonctionnement"
-    },
-    "cta": {
-      "title": "Choisissez la bonne entrée",
-      "description": "Apprenez, contribuez avec des vidéos ou aidez à curer le catalogue public.",
-      "cards": {
-        "learners": {
-          "title": "Apprendre maintenant",
-          "description": "Explorez les vidéos par catégorie, langue, durée et résumé avant de regarder."
-        },
-        "contributors": {
-          "title": "Envoyer une référence",
-          "description": "Suggérez des vidéos YouTube publiques pour enrichir le catalogue."
-        },
-        "editors": {
-          "title": "Postuler comme éditeur",
-          "description": "Aidez à revoir, organiser et qualifier playlists et parcours."
-        }
-      }
-    },
-    "finalCta": {
-      "title": "Une vidéo mérite de devenir apprentissage ?",
-      "description": "Envoyez une référence publique et aidez Tube O2 à grandir avec contexte, catégories et curation.",
-      "submit": "Envoyer une vidéo",
-      "editor": "Je veux curer"
-    },
-    "error": "Impossible de charger la curation publique pour le moment. Nous affichons la structure de la page pendant une nouvelle tentative.",
-    "live": {
-      "label": "En direct"
-    },
-    "learningRails": {
-      "title": "Parcours d’apprentissage",
-      "description": "Parcours avec miniatures réelles, contexte curriculaire et séquence pour étudier sans se perdre dans le flux.",
-      "cta": "Ouvrir FACODI",
-      "facodi": {
-        "title": "Fondations académiques pour mieux penser",
-        "description": "Parcours FACODI avec curation, cours et unité au même endroit."
-      },
-      "lesti": {
-        "title": "Technologie avec intention et vision",
-        "description": "Parcours LESTI pour programmer, analyser des données et bâtir des systèmes avec intention."
-      },
-      "open": {
-        "title": "Collections ouvertes de la communauté",
-        "description": "Les bons liens deviennent des parcours publics, avec résumé et catégorie avant lecture."
-      }
-    },
-    "videoRails": {
-      "trendingNow": {
-        "title": "Tendance du moment",
-        "description": "Videos mises en avant avec la plus forte pertinence pour la decouverte actuelle."
-      },
-      "freshDrops": {
-        "title": "Nouveautes",
-        "description": "Contenus recemment publies qui entrent dans le catalogue public."
-      },
-      "mostViewed": {
-        "title": "Les plus vues",
-        "description": "Les videos qui attirent le plus de vues dans la communaute."
-      },
-      "communityPicks": {
-        "title": "Choix de la communaute",
-        "description": "Videos avec le plus de favoris et d'ajouts en playlists d'apprentissage."
-      },
-      "withSummaries": {
-        "title": "Avec resume disponible",
-        "description": "Videos qui incluent deja un resume contextuel avant lecture."
-      },
-      "quickLessons": {
-        "title": "Lecons rapides",
-        "description": "Contenus courts pour des sessions d'etude pratiques et efficaces."
-      }
-    }
-  },
-  "notFound": {
-    "title": "404",
-    "description": "Oups ! Page introuvable",
-    "returnHome": "Retour à l'accueil"
-  },
-  "community": {
-    "title": "Communauté",
-    "description": "Connectez-vous avec d'autres curateurs et passionnés de vidéos.",
-    "totalContributors": "Total des Contributeurs",
-    "contributorsCount": "{{count}} utilisateurs",
-    "allUsers": "Tous les Utilisateurs",
-    "submissionsCount": "{{count}} soumissions",
-    "loadUsersError": "Échec du chargement des utilisateurs de la communauté. Veuillez réessayer plus tard.",
-    "noUsersFoundTitle": "Aucun utilisateur trouvé.",
-    "noUsersFoundDescription": "Il semble qu'il n'y ait pas encore d'utilisateurs dans la communauté. Soyez le premier à rejoindre!",
-    "createFirstPlaylist": "Créez votre première playlist"
-  },
-  "playlists": {
-    "searchPlaceholder": "Rechercher des playlists...",
-    "createPlaylist": "Créer une Playlist",
-    "videoCount": "{{count}} vidéos",
-    "noDescription": "Aucune description fournie.",
-    "noPlaylistsTitle": "Aucune playlist trouvée.",
-    "noPlaylistsDescription": "Soyez le premier à créer une playlist et à organiser les connaissances !",
-    "createFirstPlaylist": "Créer votre première playlist",
-    "loadingErrorTitle": "Erreur lors du chargement des playlists",
-    "loadingErrorDescription": "Impossible de charger les playlists. Veuillez réessayer plus tard.",
-    "learningPath": "Parcours d'apprentissage",
-    "collection": "Collection",
-    "progress": "Progression",
-    "filter": {
-      "all": "Toutes les Playlists",
-      "myPlaylists": "Mes Playlists",
-      "collaborating": "En collaboration",
-      "allCourseCodes": "Tous les cours",
-      "allSemesters": "Tous les semestres",
-      "allLanguages": "Toutes les langues",
-      "allTypes": "Tous les types",
-      "allVideoRanges": "Tous les volumes de vidéos",
-      "withVideos": "Avec vidéos",
-      "emptyVideos": "Playlists vides",
-      "videos1to9": "1 à 9 vidéos",
-      "videos10plus": "10+ vidéos"
-    },
-    "import": {
-      "button": "Importer des vidéos YouTube",
-      "title": "Importer les vidéos d'une playlist YouTube",
-      "description": "Collez l'URL d'une playlist YouTube pour envoyer ses vidéos dans le flux normal d'enrichissement et d'affectation éducative de Tube O2.",
-      "form": {
-        "urlLabel": "URL de la playlist YouTube",
-        "urlPlaceholder": "https://www.youtube.com/playlist?list=...",
-        "importButton": "Importer les vidéos",
-        "importingButton": "Importation..."
-      },
-      "error": {
-        "invalidUrl": "Veuillez entrer une URL de playlist YouTube valide.",
-        "notYoutubePlaylistUrl": "Seules les URLs de playlists YouTube sont acceptées.",
-        "notLoggedIn": "Vous devez être connecté pour importer des playlists.",
-        "noPlaylistId": "Impossible d'extraire un identifiant de playlist depuis l'URL fournie.",
-        "generic": "Une erreur est survenue lors de l'importation de la playlist. Veuillez réessayer.",
-        "importFunctionFailed": "Impossible d'exécuter l'importation de la playlist côté serveur.",
-        "noImportResponse": "La fonction d'importation n'a renvoyé aucune donnée.",
-        "youtubeApiFetchFailed": "Échec de la récupération des détails de la playlist YouTube. Vérifiez l'URL ou réessayez plus tard.",
-        "videoProcessingFailed": "Échec du traitement de la vidéo '{{title}}' : {{error}}",
-        "youtubeApiKeyMissing": "La clé API YouTube est absente ou invalide sur le serveur. Veuillez contacter le support."
-      },
-      "success": {
-        "summaryTitle": "Importation terminée",
-        "summaryDescription": "Trouvées : {{found}} • Nouvelles soumissions : {{created}} • Déjà traitées : {{existing}} • Envoyées au traitement : {{queued}}",
-        "videoAdded": "Vidéo '{{title}}' ajoutée à Tube O2.",
+    "cura…2041 tokens truncated… "Vidéo '{{title}}' ajoutée à Tube O2.",
         "allVideosProcessed": "{{count}} vidéos ont été envoyées au traitement."
       },
       "info": {

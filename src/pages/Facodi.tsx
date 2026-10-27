@@ -125,6 +125,12 @@ export default function Facodi() {
                 {t('facodiPage.hero.secondaryCta')}
                 <Send className="h-5 w-5" />
               </Button>
+              {import.meta.env.VITE_ENABLE_FACODI_KNOWLEDGE === 'true' && (
+                <Button size="xl" variant="outline" className="h-14 justify-between px-6" onClick={() => navigate('/facodi/knowledge')}>
+                  {t('facodiKnowledge.openAtlas')}
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+              )}
             </div>
           </div>
           <div className="grid gap-4 border-2 border-border bg-card p-4 text-card-foreground shadow-[12px_12px_0_#efff00] sm:grid-cols-3">

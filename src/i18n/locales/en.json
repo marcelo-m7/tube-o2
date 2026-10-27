@@ -1,4 +1,17 @@
 {
+  "facodiKnowledge": {
+    "back":"Back to FACODI","openAtlas":"Curriculum atlas","signIn":"Sign in","eyebrow":"FACODI · Curriculum intelligence",
+    "title":"Curriculum atlas","subtitle":"Explore official study programmes and discover which FACODI courses support each curricular unit. Only approved mappings are shown.",
+    "sourceLabel":"Reference source","sourceDetail":"Odoo 19 · FACODI Learning","programme":"Select programme","officialSource":"View official source",
+    "coverageTitle":"Editorial coverage","coverageChartLabel":"{{percent}} percent of units have direct coverage","directCoverage":"Direct coverage",
+    "disclaimer":"Coverage is editorial and does not establish academic equivalence, ECTS or credit recognition.",
+    "curriculumLabel":"Study programme","unitsTitle":"Curricular units","search":"Search units...","year":"Year {{number}}",
+    "relatedCourses":"Related FACODI courses","noCourse":"No approved FACODI courses are mapped to this unit yet.","noUnits":"No units match this filter.",
+    "metric":{"units":"Units","covered":"Covered","partial":"Partial support","missing":"Not mapped"},
+    "coverage":{"covered":"Covered","partial":"Partial support","missing":"Not mapped"},
+    "empty":{"title":"No published curriculum","description":"Curricula will appear once they have been published and validated in FACODI Learning."},
+    "error":{"title":"Curriculum connection unavailable","description":"Sign in to view the curriculum area. If the issue persists, the Odoo connector may still be under configuration."}
+  },
   "common": {
     "back": "Back",
     "language": {
