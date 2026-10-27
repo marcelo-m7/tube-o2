@@ -1,1 +1,1 @@
-export const curriculumKeys={all:['facodi','curriculum'] as const,snapshot:()=>[...curriculumKeys.all,'published-snapshot'] as const};
+export const curriculumKeys={all:['facodi','curriculum'] as const,snapshot:(userId:string)=>[...curriculumKeys.all,'published-snapshot',userId] as const};

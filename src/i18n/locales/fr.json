@@ -10,7 +10,8 @@
     "metric":{"units":"Unités","covered":"Couvertes","partial":"Soutien partiel","missing":"Non associées"},
     "coverage":{"covered":"Couverte","partial":"Soutien partiel","missing":"Non associée"},
     "empty":{"title":"Aucun programme publié","description":"Les programmes apparaîtront après publication et validation dans FACODI Learning."},
-    "error":{"title":"Connexion aux programmes indisponible","description":"Connectez-vous pour consulter les programmes. Si le problème persiste, l'intégration Odoo est peut-être encore en cours de configuration."}
+    "error":{"title":"Connexion aux programmes indisponible","description":"L'intégration Odoo est temporairement indisponible. Veuillez réessayer dans un instant."},
+    "authentication":{"title":"Connectez-vous pour accéder à l'Atlas","description":"L'Atlas des programmes est accessible aux utilisateurs FACODI connectés."}
   },
   "common": {
     "back": "Retour",

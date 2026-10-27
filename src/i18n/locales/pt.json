@@ -10,7 +10,8 @@
     "metric": {"units":"Unidades", "covered":"Cobertas", "partial":"Apoio parcial", "missing":"Por mapear"},
     "coverage": {"covered":"Coberta", "partial":"Apoio parcial", "missing":"Por mapear"},
     "empty": {"title":"Nenhum referencial publicado", "description":"Os programas curriculares serão apresentados quando forem publicados e validados no FACODI Learning."},
-    "error": {"title":"Ligação curricular indisponível", "description":"Inicia sessão para consultar a área curricular. Se o problema continuar, a integração do Odoo poderá ainda estar em configuração."}
+    "error": {"title":"Ligação curricular indisponível", "description":"A integração com o Odoo está temporariamente indisponível. Tenta novamente dentro de momentos."},
+    "authentication": {"title":"Inicia sessão para consultar o Atlas", "description":"O Atlas curricular está disponível para utilizadores autenticados da FACODI."}
   },
   "common": {
     "back": "Voltar",

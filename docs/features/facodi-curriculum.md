@@ -47,3 +47,11 @@ This is a **shape example**, not live data. An anonymous request must be rejecte
 - Check responsive layout, keyboard navigation, locale strings (pt/en/es/fr), contrast and links to canonical Odoo course pages.
 - Exercise Odoo JSON-2 live read against a least-privileged API-key user, then inspect the response for private data.
 - Do not merge into `facodi` or `main` before the deploy target and the `marcelo-m7.com` preservation strategy are confirmed.
+
+## Preview hardening (PR #72 review, 27 October 2026)
+
+- Cloudflare Access protects the branch preview. The PWA plugin now emits one manifest link with `crossorigin="use-credentials"` so the manifest fetch includes the existing Access session rather than being redirected to the cross-origin Access login page. Visitors still need legitimate access; this does not bypass Cloudflare Access. Do not permit wildcard CORS on Cloudflare's login service.
+- Authentication is resolved before invoking the Supabase function. A signed-out visitor sees a dedicated sign-in state, and the return path `/facodi/knowledge` is kept for the existing login flow. The React Query snapshot key includes the authenticated Supabase user ID to avoid another user's cached snapshot being displayed after account switching.
+- The Odoo connector pages all four model queries in stable `id asc` order, with a 5,000-record safety cap per model. Rather than reporting misleading coverage when the cap is exceeded, it returns a sanitized upstream error. The Supabase Edge logs indicate the failing stage and HTTP status, **never credentials or Odoo response bodies**.
+- The `facodi-curriculum` Supabase Edge Function v3 remains authenticated (`verify_jwt=true`), read-only and CORS-scoped to the existing trusted origins. Its server-side logs now separate `rate-limit check failed` from `upstream read failed` to diagnose the previously observed 502 without disclosing the Monynha API key. A live successful authenticated read with Monynha must still be verified; a successful deploy or preflight is not sufficient.
+- The branch preview PWA and its manifest may remain inaccessible to visitors who have not authenticated with **Cloudflare Access**, separately from Supabase Auth. This is expected and should not be worked around by relaxing access policies.

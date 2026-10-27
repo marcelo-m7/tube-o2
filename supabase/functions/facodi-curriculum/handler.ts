@@ -17,6 +17,19 @@ export function resolveOdooConnectorConfig(env: Record<string, string | undefine
 
 type OdooRecord = Record<string, unknown>;
 type Relation = number | [number, string] | false | null;
+export type CurriculumReadStage = 'references' | 'units' | 'coverage' | 'courses';
+
+export class CurriculumConnectorError extends Error {
+  constructor(
+    public readonly stage: CurriculumReadStage,
+    public readonly reason: 'upstream_http_error' | 'invalid_response' | 'incomplete_snapshot',
+    public readonly upstreamStatus: number | null = null,
+  ) {
+    // Never include the upstream response body, credentials or API-key account data.
+    super(`curriculum_${reason}`);
+    this.name = 'CurriculumConnectorError';
+  }
+}
 
 function relationId(value: unknown): number | null {
   if (typeof value === 'number' && Number.isInteger(value) && value > 0) return value;
@@ -51,26 +64,39 @@ export async function loadPublishedCurriculum(config: OdooConfig, fetcher: typeo
   const base = checkOdooOrigin(config.odooUrl);
   if (!config.odooApiKey) throw new Error('missing_odoo_key');
 
-  const search = async (model: string, fields: string[], domain: unknown[], limit: number): Promise<OdooRecord[]> => {
-    const request = await fetcher(`${base}/json/2/${model}/search_read`, {
-      method: 'POST',
-      headers: {
-        Authorization: `bearer ${config.odooApiKey}`,
-        'Content-Type': 'application/json',
-        ...(config.odooDatabase ? {'X-Odoo-Database': config.odooDatabase} : {}),
-      },
-      body: JSON.stringify({domain,fields,limit,order:'id asc'}),
-      signal: AbortSignal.timeout(12_000),
-    });
-    if (!request.ok) throw new Error(`odoo_upstream_${request.status}`);
-    const data: unknown = await request.json();
-    if (!Array.isArray(data)) throw new Error('odoo_invalid_response');
-    return data.filter((item): item is OdooRecord => item !== null && typeof item === 'object' && !Array.isArray(item));
+  const search = async (model: string, fields: string[], domain: unknown[], stage: CurriculumReadStage): Promise<OdooRecord[]> => {
+    const pageSize = 200;
+    const maxRecords = 5000;
+    const records: OdooRecord[] = [];
+    for (let offset = 0; ; offset = records.length) {
+      // Fetch one extra record at the cap to distinguish exactly-full from truncated.
+      const limit = Math.min(pageSize, maxRecords - offset + 1);
+      const request = await fetcher(`${base}/json/2/${model}/search_read`, {
+        method: 'POST',
+        headers: {
+          Authorization: `bearer ${config.odooApiKey}`,
+          'Content-Type': 'application/json',
+          ...(config.odooDatabase ? {'X-Odoo-Database': config.odooDatabase} : {}),
+        },
+        body: JSON.stringify({domain,fields,limit,offset,order:'id asc'}),
+        signal: AbortSignal.timeout(12_000),
+      });
+      if (!request.ok) throw new CurriculumConnectorError(stage, 'upstream_http_error', request.status);
+      let data: unknown;
+      try { data = await request.json(); }
+      catch { throw new CurriculumConnectorError(stage, 'invalid_response'); }
+      if (!Array.isArray(data) || data.some(item=>!item || typeof item!=='object' || Array.isArray(item))) {
+        throw new CurriculumConnectorError(stage, 'invalid_response');
+      }
+      if (records.length + data.length > maxRecords) throw new CurriculumConnectorError(stage, 'incomplete_snapshot');
+      records.push(...data as OdooRecord[]);
+      if (data.length < limit) return records;
+    }
   };
 
   const referencesRaw = await search('facodi.learning.curriculum.reference',
     ['id','institution','programme_name','academic_year','external_programme_code','source_url'],
-    [['website_published','=',true]], 50);
+    [['website_published','=',true]], 'references');
   const references = referencesRaw.map(ref => ({
     id: numeric(ref.id), institution: string(ref.institution), programme: string(ref.programme_name),
     year: string(ref.academic_year), code: string(ref.external_programme_code), sourceUrl: safeSourceUrl(ref.source_url),
@@ -80,7 +106,7 @@ export async function loadPublishedCurriculum(config: OdooConfig, fetcher: typeo
   const referenceIds = references.map(ref => ref.id);
   const unitsRaw = await search('facodi.learning.curriculum.unit',
     ['id','reference_id','name','external_unit_code','curricular_year','period','credits'],
-    [['reference_id','in',referenceIds]], 300);
+    [['reference_id','in',referenceIds]], 'units');
   const units = unitsRaw.map(unit => ({
     id: numeric(unit.id), referenceId: relationId(unit.reference_id as Relation) ?? 0,
     name: string(unit.name), code: string(unit.external_unit_code), year: numeric(unit.curricular_year),
@@ -91,12 +117,12 @@ export async function loadPublishedCurriculum(config: OdooConfig, fetcher: typeo
   const unitIds = units.map(unit => unit.id);
   const coverageRaw = await search('facodi.learning.curriculum.coverage',
     ['id','curriculum_unit_id','channel_id','coverage_type','confidence'],
-    [['state','=','approved'],['curriculum_unit_id','in',unitIds]], 500);
+    [['state','=','approved'],['curriculum_unit_id','in',unitIds]], 'coverage');
   const courseIds = [...new Set(coverageRaw.map(row => relationId(row.channel_id as Relation)).filter((id): id is number => id !== null))];
   if (!courseIds.length) return {references,units,courses:[],coverage:[]};
 
   const coursesRaw = await search('slide.channel', ['id','name','website_url'],
-    [['website_published','=',true],['id','in',courseIds]], 300);
+    [['website_published','=',true],['id','in',courseIds]], 'courses');
   const courses = coursesRaw.map(course => ({
     id:numeric(course.id),name:string(course.name),url:courseUrl(base,course.website_url),
   })).filter(course => course.id > 0);

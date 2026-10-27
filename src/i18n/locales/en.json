@@ -10,7 +10,8 @@
     "metric":{"units":"Units","covered":"Covered","partial":"Partial support","missing":"Not mapped"},
     "coverage":{"covered":"Covered","partial":"Partial support","missing":"Not mapped"},
     "empty":{"title":"No published curriculum","description":"Curricula will appear once they have been published and validated in FACODI Learning."},
-    "error":{"title":"Curriculum connection unavailable","description":"Sign in to view the curriculum area. If the issue persists, the Odoo connector may still be under configuration."}
+    "error":{"title":"Curriculum connection unavailable","description":"The Odoo integration is temporarily unavailable. Please try again shortly."},
+    "authentication":{"title":"Sign in to access the Atlas","description":"The curriculum Atlas is available to signed-in FACODI users."}
   },
   "common": {
     "back": "Back",

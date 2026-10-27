@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { getAuthenticatedUser } from '../_shared/auth.ts';
 import { checkEdgeRateLimit } from '../_shared/rate-limit.ts';
 import { errorResponse, jsonResponse, optionsResponse } from '../_shared/http.ts';
-import { loadPublishedCurriculum, resolveOdooConnectorConfig } from './handler.ts';
+import { CurriculumConnectorError, loadPublishedCurriculum, resolveOdooConnectorConfig } from './handler.ts';
 import { facodiCorsOptions } from './cors.ts';
 
 Deno.serve(async (request: Request) => {
@@ -24,20 +24,28 @@ Deno.serve(async (request: Request) => {
   const { user } = await getAuthenticatedUser(request, supabaseUrl, anonKey);
   if (!user) return errorResponse(request, 401, 'authentication_required', 'Please sign in', {}, facodiCorsOptions);
 
+  const supabase = createClient(supabaseUrl, serviceRoleKey, {auth:{persistSession:false}});
   try {
-    const supabase = createClient(supabaseUrl, serviceRoleKey, {auth:{persistSession:false}});
     const limit = await checkEdgeRateLimit(supabase, {
       functionName:'facodi-curriculum',userId:user.id,
       windows:[{windowSeconds:60,maxRequests:12}],
     });
     if (!limit.allowed) return errorResponse(request, 429, 'rate_limited', 'Please try again later', {}, facodiCorsOptions);
+  } catch (error) {
+    console.error('facodi-curriculum: rate-limit check failed', {kind:error instanceof Error?error.name:'unknown'});
+    return errorResponse(request, 503, 'rate_limit_unavailable', 'Curriculum data is temporarily unavailable', {}, facodiCorsOptions);
+  }
+
+  try {
     const data = await loadPublishedCurriculum(odooConfig);
     const response = jsonResponse(request, data, 200, facodiCorsOptions);
     response.headers.set('Cache-Control', 'private, no-store');
     return response;
   } catch (error) {
     // The upstream exception may contain sensitive administrative information.
-    console.error('facodi-curriculum: upstream read failed', error instanceof Error ? error.name : 'unknown');
+    console.error('facodi-curriculum: upstream read failed', error instanceof CurriculumConnectorError
+      ? {stage:error.stage,reason:error.reason,status:error.upstreamStatus}
+      : {kind:error instanceof Error?error.name:'unknown'});
     return errorResponse(request, 502, 'curriculum_unavailable', 'Curriculum data is temporarily unavailable', {}, facodiCorsOptions);
   }
 });

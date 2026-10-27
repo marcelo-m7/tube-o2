@@ -10,7 +10,8 @@
     "metric":{"units":"Unidades","covered":"Cubiertas","partial":"Apoyo parcial","missing":"Sin mapear"},
     "coverage":{"covered":"Cubierta","partial":"Apoyo parcial","missing":"Sin mapear"},
     "empty":{"title":"Sin currículos publicados","description":"Los planes de estudio aparecerán cuando estén publicados y validados en FACODI Learning."},
-    "error":{"title":"Conexión curricular no disponible","description":"Inicia sesión para consultar los programas. Si el problema persiste, la integración de Odoo podría estar en configuración."}
+    "error":{"title":"Conexión curricular no disponible","description":"La integración con Odoo no está disponible temporalmente. Inténtalo de nuevo en breve."},
+    "authentication":{"title":"Inicia sesión para acceder al Atlas","description":"El Atlas curricular está disponible para usuarios autenticados de FACODI."}
   },
   "common": {
     "back": "Volver",

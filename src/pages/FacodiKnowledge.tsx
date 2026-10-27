@@ -9,6 +9,7 @@ import {Card,CardContent} from '@/components/ui/card';
 import {Input} from '@/components/ui/input';
 import {Skeleton} from '@/components/ui/skeleton';
 import {useFacodiCurriculum} from '@/features/curriculum/queries/useFacodiCurriculum';
+import {useAuth} from '@/features/auth/useAuth';
 import {classifyUnitCoverage,summarizeCurriculum} from '@/entities/curriculum/curriculum.health';
 import type {CurriculumCoverage,CurriculumUnit} from '@/entities/curriculum/curriculum.types';
 
@@ -23,19 +24,20 @@ function CoveragePill({unitId,coverage}:{unitId:number;coverage:CurriculumCovera
   </Badge>;
 }
 
-function EmptyDashboard({reason}:{reason:'empty'|'error';}){
+function EmptyDashboard({reason}:{reason:'empty'|'error'|'authentication';}){
   const {t}=useTranslation();
   return <Card className="border-dashed border-border bg-card/80"><CardContent className="flex flex-col items-center gap-5 px-7 py-16 text-center">
     {reason==='error'?<Unplug className="h-10 w-10 text-muted-foreground"/>:<BookOpen className="h-10 w-10 text-muted-foreground"/>}
     <div className="max-w-lg space-y-2"><h2 className="text-xl font-semibold">{t(`facodiKnowledge.${reason}.title`)}</h2>
       <p className="text-sm leading-6 text-muted-foreground">{t(`facodiKnowledge.${reason}.description`)}</p></div>
     <div className="flex flex-wrap justify-center gap-3"><Button asChild variant="outline"><Link to="/facodi">{t('facodiKnowledge.back')}</Link></Button>
-      {reason==='error'&&<Button asChild><Link to="/auth">{t('facodiKnowledge.signIn')}</Link></Button>}</div>
+      {reason==='authentication'&&<Button asChild><Link to="/auth" onClick={()=>localStorage.setItem('redirectAfterLogin','/facodi/knowledge')}>{t('facodiKnowledge.signIn')}</Link></Button>}</div>
   </CardContent></Card>;
 }
 
 export default function FacodiKnowledge(){
   const {t}=useTranslation();
+  const {user,loading:authLoading}=useAuth();
   const {data,isPending,isError,refetch,isFetching}=useFacodiCurriculum();
   const [selected,setSelected]=useState<number|null>(null);
   const [query,setQuery]=useState('');
@@ -74,15 +76,17 @@ export default function FacodiKnowledge(){
     </section>
 
     <div className="container space-y-8 py-10 md:py-12">
-      {isPending?<div className="space-y-5" aria-label={t('common.loading')}><Skeleton className="h-28 w-full"/><Skeleton className="h-80 w-full"/></div>
+      {authLoading?<div className="space-y-5" aria-label={t('common.loading')}><Skeleton className="h-28 w-full"/><Skeleton className="h-80 w-full"/></div>
+      :!user?<EmptyDashboard reason="authentication"/>
+      :isPending?<div className="space-y-5" aria-label={t('common.loading')}><Skeleton className="h-28 w-full"/><Skeleton className="h-80 w-full"/></div>
       :isError?<div className="space-y-4"><EmptyDashboard reason="error"/><Button onClick={()=>void refetch()} disabled={isFetching} variant="outline">{t('common.retry')}</Button></div>
       :!activeReference||!data?<EmptyDashboard reason="empty"/>
       :<>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap gap-2" role="group" aria-label={t('facodiKnowledge.programme')}>
-            {references.map(ref=><Button key={ref.id} variant={ref.id===activeReference.id?'default':'outline'} onClick={()=>{setSelected(ref.id);setQuery('');}} className="max-w-full truncate">{ref.programme} · {ref.year}</Button>)}
+            {references.map(ref=><Button key={ref.id} aria-pressed={ref.id===activeReference.id} variant={ref.id===activeReference.id?'default':'outline'} onClick={()=>{setSelected(ref.id);setQuery('');}} className="max-w-full truncate">{ref.programme} · {ref.year}</Button>)}
           </div>
-          {activeReference.sourceUrl&&<a href={activeReference.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">{t('facodiKnowledge.officialSource')}<ArrowUpRight className="h-4 w-4"/></a>}
+          {activeReference.sourceUrl&&<a href={activeReference.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-foreground underline-offset-4 hover:underline">{t('facodiKnowledge.officialSource')}<ArrowUpRight className="h-4 w-4"/></a>}
         </div>
 
         <div className="grid gap-4 md:grid-cols-4">
@@ -98,7 +102,7 @@ export default function FacodiKnowledge(){
           <aside className="space-y-5">
             <Card className="rounded-none border-2 border-border"><CardContent className="space-y-6 p-6">
               <div className="space-y-1"><p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('facodiKnowledge.coverageTitle')}</p><p className="text-xl font-bold">{activeReference.programme}</p><p className="text-sm text-muted-foreground">{activeReference.institution}</p></div>
-              <div role="img" aria-label={t('facodiKnowledge.coverageChartLabel',{percent})} className="mx-auto flex h-44 w-44 items-center justify-center rounded-full" style={{background:`conic-gradient(#37BED2 0% ${percent}%, #F0BC53 ${percent}% ${percent+(summary.total?summary.partial/summary.total*100:0)}%, var(--muted) 0%)`}}>
+              <div role="img" aria-label={t('facodiKnowledge.coverageChartLabel',{percent})} className="mx-auto flex h-44 w-44 items-center justify-center rounded-full" style={{background:`conic-gradient(#37BED2 0% ${percent}%, #F0BC53 ${percent}% ${percent+(summary.total?summary.partial/summary.total*100:0)}%, hsl(var(--muted)) 0%)`}}>
                 <div className="flex h-32 w-32 flex-col items-center justify-center rounded-full bg-card"><strong className="text-4xl tabular-nums">{percent}%</strong><span className="text-xs font-medium text-muted-foreground">{t('facodiKnowledge.directCoverage')}</span></div>
               </div>
               <p className="text-xs leading-5 text-muted-foreground">{t('facodiKnowledge.disclaimer')}</p>
