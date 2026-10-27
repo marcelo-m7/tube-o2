@@ -19,6 +19,10 @@ describe('public FACODI curriculum projection', () => {
     expect(resolveOdooConnectorConfig({ODOO_SECRET:'user-api-key',ODOO_URL:'https://facodi.com',ODOO_DB:'facodi',ODOO_USER:'monynha@facodi.com',ODOO_PASSWORD:'not-for-api'}))
       .toEqual({odooApiKey:'user-api-key',odooUrl:'https://facodi.com',odooDatabase:'facodi'});
     expect(resolveOdooConnectorConfig({ODOO_PASSWORD:'password-only'}).odooApiKey).toBe('');
+    // This FACODI-only connector must never trust an accidental alternate host
+    // from a deployment variable when sending the privileged user API key.
+    expect(resolveOdooConnectorConfig({ODOO_URL:'https://different.example/path',ODOO_SECRET:'secret'}).odooUrl)
+      .toBe('https://facodi.com');
   });
   it('returns only explicitly published curriculum and approved coverage', async () => {
     const requests: {model:string; body:Record<string, unknown>}[] = [];
@@ -48,6 +52,23 @@ describe('public FACODI curriculum projection', () => {
 
   it('rejects unsafe backend configuration', async () => {
     await expect(loadPublishedCurriculum({odooUrl:'http://facodi.com',odooApiKey:'secret'}, vi.fn())).rejects.toThrow('invalid_odoo_origin');
+  });
+
+  it('classifies invalid origin configuration separately from upstream network failures', async () => {
+    await expect(loadPublishedCurriculum({odooUrl:'https://facodi.com.evil.example/api',odooApiKey:'secret'},vi.fn()))
+      .rejects.toMatchObject({stage:'configuration',reason:'invalid_odoo_origin'});
+    const fetcher=vi.fn(async()=>{throw new Error('secret https://facodi.com?token=unsafe-to-log');});
+    const outcome=loadPublishedCurriculum({odooUrl:'https://facodi.com',odooApiKey:'secret'},fetcher);
+    await expect(outcome).rejects.toMatchObject({stage:'references',reason:'network_failure'});
+    await expect(outcome).rejects.not.toThrow(/unsafe-to-log/);
+  });
+  it('accepts the canonical FACODI host even when the configured URL includes an API path or outer quotes',async()=>{
+    const urls:string[]=[];
+    const fetcher=vi.fn(async (url:string)=>{urls.push(url);return new Response('[]',{status:200});});
+    for(const configuredUrl of ['https://facodi.com/json/2','"https://facodi.com/"','https://www.facodi.com/web']) {
+      await expect(loadPublishedCurriculum({odooUrl:configuredUrl,odooApiKey:'secret'},fetcher)).resolves.toMatchObject({references:[]});
+    }
+    expect(urls).toEqual(Array(3).fill('https://facodi.com/json/2/facodi.learning.curriculum.reference/search_read'));
   });
 
   it('reports the failing Odoo phase and status without exposing an upstream error body or key', async () => {

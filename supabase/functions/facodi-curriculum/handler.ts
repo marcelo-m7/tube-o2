@@ -10,19 +10,21 @@ export function resolveOdooConnectorConfig(env: Record<string, string | undefine
   return {
     // The Odoo user API key is never interchangeable with the account password.
     odooApiKey: (env.ODOO_SECRET || '').trim(),
-    odooUrl: (env.ODOO_URL || '').trim(),
+    // This adapter is FACODI-specific: never send the privileged API key to
+    // a deployment-provided URL. Pin the canonical, user-approved Odoo host.
+    odooUrl: 'https://facodi.com',
     odooDatabase: (env.ODOO_DB || '').trim(),
   };
 }
 
 type OdooRecord = Record<string, unknown>;
 type Relation = number | [number, string] | false | null;
-export type CurriculumReadStage = 'references' | 'units' | 'coverage' | 'courses';
+export type CurriculumReadStage = 'configuration' | 'references' | 'units' | 'coverage' | 'courses';
 
 export class CurriculumConnectorError extends Error {
   constructor(
     public readonly stage: CurriculumReadStage,
-    public readonly reason: 'upstream_http_error' | 'invalid_response' | 'incomplete_snapshot',
+    public readonly reason: 'invalid_odoo_origin' | 'network_failure' | 'upstream_http_error' | 'invalid_response' | 'incomplete_snapshot',
     public readonly upstreamStatus: number | null = null,
   ) {
     // Never include the upstream response body, credentials or API-key account data.
@@ -45,11 +47,15 @@ function safeSourceUrl(value: unknown): string | null {
 }
 
 export function checkOdooOrigin(value: string): string {
-  const parsed = new URL(value);
-  if (parsed.origin !== 'https://facodi.com' || parsed.pathname !== '/' || parsed.search || parsed.hash) {
+  // Admin UI values may include a /json/2 suffix, or surrounding shell quotes.
+  // Only the hostname matters: never use a supplied path to construct API URLs.
+  const input = value.trim().replace(/^(['"])(.*)\1$/, '$2').trim();
+  const parsed = new URL(input);
+  if (parsed.protocol !== 'https:' || !['facodi.com','www.facodi.com'].includes(parsed.hostname) ||
+      parsed.port || parsed.username || parsed.password) {
     throw new Error('invalid_odoo_origin');
   }
-  return parsed.origin;
+  return 'https://facodi.com';
 }
 
 export function courseUrl(base: string, value: unknown): string | null {
@@ -61,7 +67,9 @@ export function courseUrl(base: string, value: unknown): string | null {
 }
 
 export async function loadPublishedCurriculum(config: OdooConfig, fetcher: typeof fetch = fetch) {
-  const base = checkOdooOrigin(config.odooUrl);
+  let base: string;
+  try { base = checkOdooOrigin(config.odooUrl); }
+  catch { throw new CurriculumConnectorError('configuration','invalid_odoo_origin'); }
   if (!config.odooApiKey) throw new Error('missing_odoo_key');
 
   const search = async (model: string, fields: string[], domain: unknown[], stage: CurriculumReadStage): Promise<OdooRecord[]> => {
@@ -71,7 +79,8 @@ export async function loadPublishedCurriculum(config: OdooConfig, fetcher: typeo
     for (let offset = 0; ; offset = records.length) {
       // Fetch one extra record at the cap to distinguish exactly-full from truncated.
       const limit = Math.min(pageSize, maxRecords - offset + 1);
-      const request = await fetcher(`${base}/json/2/${model}/search_read`, {
+      let request: Response;
+      try { request = await fetcher(`${base}/json/2/${model}/search_read`, {
         method: 'POST',
         headers: {
           Authorization: `bearer ${config.odooApiKey}`,
@@ -80,7 +89,8 @@ export async function loadPublishedCurriculum(config: OdooConfig, fetcher: typeo
         },
         body: JSON.stringify({domain,fields,limit,offset,order:'id asc'}),
         signal: AbortSignal.timeout(12_000),
-      });
+      }); }
+      catch { throw new CurriculumConnectorError(stage,'network_failure'); }
       if (!request.ok) throw new CurriculumConnectorError(stage, 'upstream_http_error', request.status);
       let data: unknown;
       try { data = await request.json(); }
