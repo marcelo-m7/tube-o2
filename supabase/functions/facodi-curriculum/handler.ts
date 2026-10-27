@@ -6,6 +6,15 @@ export interface OdooConfig {
   odooDatabase?: string;
 }
 
+export function resolveOdooConnectorConfig(env: Record<string, string | undefined>): OdooConfig {
+  return {
+    // The Odoo user API key is never interchangeable with the account password.
+    odooApiKey: (env.ODOO_SECRET || '').trim(),
+    odooUrl: (env.ODOO_URL || '').trim(),
+    odooDatabase: (env.ODOO_DB || '').trim(),
+  };
+}
+
 type OdooRecord = Record<string, unknown>;
 type Relation = number | [number, string] | false | null;
 

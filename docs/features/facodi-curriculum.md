@@ -6,17 +6,21 @@ The new `/facodi/knowledge` route belongs to the existing Tube O2 React SPA. It 
 
 - **Odoo 19 Community (`https://facodi.com`)** remains canonical. `facodi.learning.curriculum.reference`, `.unit`, `.coverage`, and `slide.channel` are consumed without modifying any record.
 - **Supabase project `wvkjainfwsyiyfcmbtid`** hosts the `facodi-curriculum` read-only Edge Function. The current frontend uses the repository's existing Supabase client and authenticated sessions.
-- The Odoo user API key is stored as **`ODOO_API_KEY` only in Supabase Edge Function secrets**, never in a `VITE_` variable, the Git repository, or a browser request. The function uses the Odoo 19 JSON-2 API (`/json/2/<model>/search_read`) with `Authorization: bearer ...`.
+- The Odoo user API key is stored as **`ODOO_SECRET` only in Supabase Edge Function secrets**, never in a `VITE_` variable, the Git repository, or a browser request. The function uses the Odoo 19 JSON-2 API (`/json/2/<model>/search_read`) with `Authorization: bearer ...`. `ODOO_USER` and `ODOO_PASSWORD` are intentionally unused: the connector never transmits the account password.
 - Requests require a valid Supabase user JWT and pass the existing per-user rate limiter. The response contains **only** approved coverage, published references and published courses, projected to a small explicit field allowlist. It never includes internal editor reviews, full evidence JSON or personal information.
 - Curriculum `equivalent` means an **editorial** comparison only, not legal equivalence, ECTS or university recognition.
 
 ## Configuration (administrator)
 
 1. Verify that the Odoo 19 deployment supports the JSON-2 API and that its user-key account has minimal **read-only** ACLs for the four whitelisted models. Do not use an Odoo administrator key for this frontend.
-2. In Supabase project `wvkjainfwsyiyfcmbtid`, configure secrets `ODOO_API_KEY`, `ODOO_BASE_URL=https://facodi.com`, `ODOO_DB=facodi`.
+2. In Supabase project `wvkjainfwsyiyfcmbtid`, configure secrets `ODOO_SECRET`, `ODOO_URL=https://facodi.com`, `ODOO_DB=facodi`.
 3. Confirm that `ALLOWED_ORIGIN` includes the **intended frontend host** (for example `https://marcelo-m7.com` if this preview is hosted there) while preserving existing Tube O2 origins. Never replace it with `*`.
 4. Deploy only `facodi-curriculum`; **do not push the entire Supabase config**. The local function declares `verify_jwt=true` and requires the shared `check_edge_rate_limit` RPC.
 5. Publish and validate the intended UAlg/LESTI curriculum in `facodi_learning` (`website_published=true`) and approve actual coverage to published `slide.channel` records. Do not seed fictitious mappings into a production database.
+
+For a Coolify/Vite Docker build, set the **public** `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` build arguments as well. `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` without the `VITE_` prefix do not automatically configure the browser bundle. `SUPABASE_SECRET_KEY` and `SUPABASE_JWKS_URL` must remain server-side and are not used as browser configuration.
+
+Deployment check (2026-10-27): `facodi-curriculum` was deployed to `wvkjainfwsyiyfcmbtid` with `verify_jwt=true`; an unauthenticated POST returned HTTP 401. The unauthenticated Odoo JSON-2 route also returned HTTP 401, confirming the route exists. Neither check proves that the configured Odoo user API key can read the intended models. A signed-in end-to-end test is still required before enabling the feature flag or merging.
 
 Without configured secrets or published Odoo records, the frontend reports an unavailable or empty state; it does not substitute local mock content.
 

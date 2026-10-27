@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { loadPublishedCurriculum } from '../../../supabase/functions/facodi-curriculum/handler';
+import { loadPublishedCurriculum, resolveOdooConnectorConfig } from '../../../supabase/functions/facodi-curriculum/handler';
 
 const fixtures: Record<string, unknown[]> = {
   'facodi.learning.curriculum.reference': [
@@ -15,6 +15,11 @@ const fixtures: Record<string, unknown[]> = {
 };
 
 describe('public FACODI curriculum projection', () => {
+  it('uses the configured Odoo user API key without falling back to the account password', () => {
+    expect(resolveOdooConnectorConfig({ODOO_SECRET:'user-api-key',ODOO_URL:'https://facodi.com',ODOO_DB:'facodi',ODOO_USER:'monynha@facodi.com',ODOO_PASSWORD:'not-for-api'}))
+      .toEqual({odooApiKey:'user-api-key',odooUrl:'https://facodi.com',odooDatabase:'facodi'});
+    expect(resolveOdooConnectorConfig({ODOO_PASSWORD:'password-only'}).odooApiKey).toBe('');
+  });
   it('returns only explicitly published curriculum and approved coverage', async () => {
     const requests: {model:string; body:Record<string, unknown>}[] = [];
     const fetcher = vi.fn(async (url: string, init: RequestInit) => {

@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { getAuthenticatedUser } from '../_shared/auth.ts';
 import { checkEdgeRateLimit } from '../_shared/rate-limit.ts';
 import { errorResponse, jsonResponse, optionsResponse } from '../_shared/http.ts';
-import { loadPublishedCurriculum } from './handler.ts';
+import { loadPublishedCurriculum, resolveOdooConnectorConfig } from './handler.ts';
 
 Deno.serve(async (request: Request) => {
   if (request.method === 'OPTIONS') return optionsResponse(request);
@@ -11,8 +11,12 @@ Deno.serve(async (request: Request) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
   const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-  const odooApiKey = Deno.env.get('ODOO_API_KEY') || '';
-  if (!supabaseUrl || !anonKey || !serviceRoleKey || !odooApiKey) {
+  const odooConfig = resolveOdooConnectorConfig({
+    ODOO_SECRET: Deno.env.get('ODOO_SECRET'),
+    ODOO_URL: Deno.env.get('ODOO_URL'),
+    ODOO_DB: Deno.env.get('ODOO_DB'),
+  });
+  if (!supabaseUrl || !anonKey || !serviceRoleKey || !odooConfig.odooApiKey || !odooConfig.odooUrl) {
     return errorResponse(request, 503, 'not_configured', 'Curriculum connector is not yet configured');
   }
 
@@ -26,11 +30,7 @@ Deno.serve(async (request: Request) => {
       windows:[{windowSeconds:60,maxRequests:12}],
     });
     if (!limit.allowed) return errorResponse(request, 429, 'rate_limited', 'Please try again later');
-    const data = await loadPublishedCurriculum({
-      odooUrl: Deno.env.get('ODOO_BASE_URL') || 'https://facodi.com',
-      odooDatabase: Deno.env.get('ODOO_DB') || 'facodi',
-      odooApiKey,
-    });
+    const data = await loadPublishedCurriculum(odooConfig);
     const response = jsonResponse(request, data);
     response.headers.set('Cache-Control', 'private, no-store');
     return response;
