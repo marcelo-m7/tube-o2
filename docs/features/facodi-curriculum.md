@@ -14,7 +14,7 @@ The new `/facodi/knowledge` route belongs to the existing Tube O2 React SPA. It 
 
 1. Verify that the Odoo 19 deployment supports the JSON-2 API and that its user-key account has minimal **read-only** ACLs for the four whitelisted models. Do not use an Odoo administrator key for this frontend.
 2. In Supabase project `wvkjainfwsyiyfcmbtid`, configure secrets `ODOO_SECRET`, `ODOO_URL=https://facodi.com`, `ODOO_DB=facodi`.
-3. Confirm that `ALLOWED_ORIGIN` includes the **intended frontend host** (for example `https://marcelo-m7.com` if this preview is hosted there) while preserving existing Tube O2 origins. Never replace it with `*`.
+3. The `facodi-curriculum` function has a **scoped HTTPS CORS allowlist** for `marcelo-m7.com`, `marcelo-m7.me`, `facodi.com` (each apex and subdomains), and the Cloudflare account's preview suffix `*.marcelo-0d6.workers.dev`. This includes the branch preview at `https://feature-facodi-curriculum-frontend-tube-o2.marcelo-0d6.workers.dev`. Existing `ALLOWED_ORIGIN`/`ALLOWED_ORIGINS` entries are retained; they must not be changed to `*`. Unrelated `*.workers.dev` accounts are deliberately **not** authorized. CORS is a browser origin policy, not authentication or a substitute for Supabase JWT validation.
 4. Deploy only `facodi-curriculum`; **do not push the entire Supabase config**. The local function declares `verify_jwt=true` and requires the shared `check_edge_rate_limit` RPC.
 5. Publish and validate the intended UAlg/LESTI curriculum in `facodi_learning` (`website_published=true`) and approve actual coverage to published `slide.channel` records. Do not seed fictitious mappings into a production database.
 

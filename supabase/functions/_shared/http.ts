@@ -1,4 +1,5 @@
 export type JsonBody = Record<string, unknown> | Array<unknown>;
+export type CorsOptions = { additionalAllowedOrigins?: readonly string[] };
 
 const defaultAllowedOrigins = [
   'https://tube.open2.tech',
@@ -21,15 +22,32 @@ function configuredAllowedOrigins() {
     .filter(Boolean);
 }
 
-export function corsHeadersForRequest(req: Request): Record<string, string> {
-  const allowedOrigins = configuredAllowedOrigins();
+function matchesAllowedOrigin(origin: string, allowed: string): boolean {
+  if (origin === allowed) return true;
+  if (!allowed.startsWith('https://*.')) return false;
+
+  try {
+    const url = new URL(origin);
+    const domain = allowed.slice('https://*.'.length);
+    return url.protocol === 'https:'
+      && url.origin === origin
+      && !url.port
+      && url.hostname.endsWith(`.${domain}`);
+  } catch {
+    return false;
+  }
+}
+
+export function corsHeadersForRequest(req: Request, options: CorsOptions = {}): Record<string, string> {
+  const allowedOrigins = [...configuredAllowedOrigins(), ...(options.additionalAllowedOrigins ?? [])];
   const requestOrigin = req.headers.get('origin');
-  const allowAll = allowedOrigins.includes('*');
+  // Privileged functions with an explicit scoped allowlist must never return '*'.
+  const allowAll = !options.additionalAllowedOrigins?.length && allowedOrigins.includes('*');
   const allowedOrigin = allowAll
     ? '*'
-    : requestOrigin && allowedOrigins.includes(requestOrigin)
+    : requestOrigin && allowedOrigins.some((allowed) => matchesAllowedOrigin(requestOrigin, allowed))
       ? requestOrigin
-      : allowedOrigins[0] ?? 'https://tube.open2.tech';
+      : allowedOrigins.find((allowed) => allowed !== '*') ?? 'https://tube.open2.tech';
 
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
@@ -39,11 +57,11 @@ export function corsHeadersForRequest(req: Request): Record<string, string> {
   };
 }
 
-export function jsonResponse(req: Request, body: JsonBody, status = 200) {
+export function jsonResponse(req: Request, body: JsonBody, status = 200, corsOptions: CorsOptions = {}) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
-      ...corsHeadersForRequest(req),
+      ...corsHeadersForRequest(req, corsOptions),
       'Content-Type': 'application/json',
     },
   });
@@ -55,6 +73,7 @@ export function errorResponse(
   code: string,
   message: string,
   details: Record<string, unknown> = {},
+  corsOptions: CorsOptions = {},
 ) {
   return jsonResponse(req, {
     error: {
@@ -62,12 +81,12 @@ export function errorResponse(
       message,
       ...details,
     },
-  }, status);
+  }, status, corsOptions);
 }
 
-export function optionsResponse(req: Request) {
+export function optionsResponse(req: Request, corsOptions: CorsOptions = {}) {
   return new Response(null, {
     status: 204,
-    headers: corsHeadersForRequest(req),
+    headers: corsHeadersForRequest(req, corsOptions),
   });
 }
