@@ -10,6 +10,7 @@ import {Input} from '@/components/ui/input';
 import {Skeleton} from '@/components/ui/skeleton';
 import {useFacodiCurriculum} from '@/features/curriculum/queries/useFacodiCurriculum';
 import {useAuth} from '@/features/auth/useAuth';
+import {usePrivateRouteMetadata} from '@/shared/hooks/usePrivateRouteMetadata';
 import {classifyUnitCoverage,summarizeCurriculum} from '@/entities/curriculum/curriculum.health';
 import type {CurriculumCoverage,CurriculumUnit} from '@/entities/curriculum/curriculum.types';
 
@@ -37,6 +38,7 @@ function EmptyDashboard({reason}:{reason:'empty'|'error'|'authentication';}){
 
 export default function FacodiKnowledge(){
   const {t}=useTranslation();
+  usePrivateRouteMetadata(`${t('facodiKnowledge.title')} | Tube O2`);
   const {user,loading:authLoading}=useAuth();
   const {data,isPending,isError,refetch,isFetching}=useFacodiCurriculum();
   const [selected,setSelected]=useState<number|null>(null);

@@ -55,3 +55,21 @@ This is a **shape example**, not live data. An anonymous request must be rejecte
 - The Odoo connector pages all four model queries in stable `id asc` order, with a 5,000-record safety cap per model. Rather than reporting misleading coverage when the cap is exceeded, it returns a sanitized upstream error. The Supabase Edge logs indicate the failing stage and HTTP status, **never credentials or Odoo response bodies**.
 - The `facodi-curriculum` Supabase Edge Function **v6** remains authenticated (`verify_jwt=true`), read-only and CORS-scoped to the existing trusted origins. A real authenticated browser request initially returned 502; safe logs isolated the cause as `configuration / invalid_odoo_origin`. The function now pins the canonical FACODI host while keeping `ODOO_SECRET` exclusively in Supabase secrets. Subsequent authenticated browser requests returned the intended four programmes and mapped courses successfully. Logs distinguish rate-limit, configuration, network and upstream HTTP errors without disclosing the Monynha API key.
 - The branch preview PWA and its manifest may remain inaccessible to visitors who have not authenticated with **Cloudflare Access**, separately from Supabase Auth. This is expected and should not be worked around by relaxing access policies.
+
+## Authenticated Atlas route metadata (follow-up to #74)
+
+The client-side `/facodi/knowledge` route now applies `robots` and `googlebot`
+`noindex, nofollow, noarchive` meta tags while mounted. It temporarily
+removes the public Tube O2 canonical and language-alternate links, preventing
+the authenticated Atlas from inheriting the homepage's canonical. On navigation
+away, the previous tags and document title are restored to avoid contaminating
+public pages. Unit tests cover entry, departure and translated title changes.
+
+**Limit:** in a static SPA, the first HTML response is the shared `index.html`.
+A crawler that does not execute JavaScript may never see the route-specific
+robots tags. For reliable crawler exclusion configure an HTTP
+`X-Robots-Tag: noindex, nofollow` response for
+`/facodi/knowledge` on the owning Cloudflare Worker (and any other server
+hosting this route). Validate with an unauthenticated HTTP request before
+claiming server-side noindex. This meta tag is not authentication or an
+authorization control.
