@@ -37,14 +37,18 @@ beforeEach(() => {
 });
 
 describe('Header', () => {
-  it('does not display signed-out actions before the auth session is initialized', () => {
+  it('keeps public mobile navigation usable without exposing guest actions during auth initialization', async () => {
     useAuthMock.mockReturnValue({ user: null, loading: true, signOut: vi.fn() });
     useProfileByIdMock.mockReturnValue({ data: undefined, isPending: true });
 
     renderWithProviders(<Header />);
 
     expect(screen.queryByRole('button', { name: /login/i })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /toggle menu/i })).toBeDisabled();
+    const mobileMenu = screen.getByRole('button', { name: /toggle menu/i });
+    expect(mobileMenu).toBeEnabled();
+    await userEvent.click(mobileMenu);
+    expect(screen.getAllByRole('link', { name: /imports/i }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: /login/i })).not.toBeInTheDocument();
   });
 
   it.each([undefined, null])('keeps authenticated navigation without a resolved profile (%s)', async (profile) => {
