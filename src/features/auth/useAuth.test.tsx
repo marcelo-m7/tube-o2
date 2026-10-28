@@ -25,12 +25,13 @@ vi.mock('@/shared/api/supabase/supabaseClient', () => ({
 }));
 
 function TestConsumer() {
-  const { user, loading, signIn } = useAuth();
+  const { user, session, loading, signIn } = useAuth();
 
   return (
     <div>
       <span>{loading ? 'loading' : 'ready'}</span>
       <span>{user?.email ?? 'no-user'}</span>
+      <span>{session?.access_token ?? 'no-token'}</span>
       <button type="button" onClick={() => signIn('test@example.com', 'secret')}>
         sign-in
       </button>
@@ -106,9 +107,10 @@ describe('useAuth', () => {
 
     const notify = onAuthStateChangeMock.mock.calls[0][0];
     act(() => notify('INITIAL_SESSION', { user: { id: 'alice', email: 'alice@example.com' } }));
-    act(() => notify('TOKEN_REFRESHED', { user: { id: 'alice', email: 'alice@example.com' } }));
+    act(() => notify('TOKEN_REFRESHED', { user: { id: 'alice', email: 'alice@example.com' }, access_token: 'rotated-test-token' }));
 
     expect(screen.getByText('alice@example.com')).toBeInTheDocument();
+    expect(screen.getByText('rotated-test-token')).toBeInTheDocument();
 
     act(() => notify('SIGNED_OUT', null));
     expect(screen.getByText('ready')).toBeInTheDocument();
