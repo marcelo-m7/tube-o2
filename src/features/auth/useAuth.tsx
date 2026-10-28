@@ -20,35 +20,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+      // INITIAL_SESSION is the SDK's hydration signal. Earlier auth events
+      // must not briefly render the signed-out UI while storage is loading.
+      if (event === 'INITIAL_SESSION') setLoading(false);
     });
-
-    supabase.auth
-      .getSession()
-      .then(async ({ data: { session }, error }) => {
-        if (error) {
-          // Invalid/expired refresh tokens can linger in local storage between sessions.
-          // Clear local auth state so the app boots cleanly instead of repeatedly failing.
-          await supabase.auth.signOut({ scope: 'local' });
-          setSession(null);
-          setUser(null);
-          setLoading(false);
-          return;
-        }
-
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      })
-      .catch(async () => {
-        await supabase.auth.signOut({ scope: 'local' });
-        setSession(null);
-        setUser(null);
-        setLoading(false);
-      });
 
     return () => subscription.unsubscribe();
   }, []);
