@@ -18,6 +18,7 @@ import { Profile } from '@/entities/profile/profile.types';
 import { mobileNavigationGroups } from './navigationItems';
 
 interface MobileNavProps {
+  loading: boolean;
   user: User | null;
   profile: Profile | null | undefined;
   unreadMessagesCount: number;
@@ -32,6 +33,7 @@ interface MobileNavProps {
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({
+  loading,
   user,
   profile,
   unreadMessagesCount,
@@ -46,6 +48,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const displayName = profile?.display_name || profile?.username || user?.email || 'User';
 
   const getBadgeCount = (path: string) => {
     if (path === '/messages') return unreadMessagesCount;
@@ -135,34 +138,36 @@ export const MobileNav: React.FC<MobileNavProps> = ({
 
           <Separator className="opacity-50 mx-4" />
 
-          {user && profile ? (
+          {loading ? (
+            <div role="status" aria-label={t('common.loading')} className="mx-4 h-12 animate-pulse rounded-xl bg-muted" />
+          ) : user ? (
             <div className="space-y-4">
               <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-3 opacity-70">
                 {t('header.accountSettings')}
               </p>
               <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-2xl mx-4 border border-border/50">
                 <Avatar className="h-10 w-10 border-2 border-primary/20 shadow-sm">
-                  <AvatarImage src={profile.avatar_url || undefined} alt={profile.display_name || profile.username || 'User'} />
+                  <AvatarImage src={profile?.avatar_url || undefined} alt={displayName} />
                   <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                    {profile.display_name ? profile.display_name[0].toUpperCase() : (profile.username ? profile.username[0].toUpperCase() : <UserIcon className="h-5 w-5" />)}
+                    {displayName[0].toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold truncate">{profile.display_name || profile.username}</p>
+                  <p className="text-sm font-bold truncate">{displayName}</p>
                   <p className="text-[10px] text-muted-foreground truncate opacity-80">{user.email}</p>
                 </div>
               </div>
               
               <div className="grid grid-cols-1 gap-1">
-                <NavLink
-                  to={`/profile/${profile.username}`}
-                  className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-2xl transition-colors duration-150"
-                  activeClassName="bg-primary/8 text-foreground font-medium"
-                  onClick={onClose}
-                >
-                  <UserIcon className="h-5 w-5" />
-                  <span className="text-sm">{t('header.myProfile')}</span>
-                </NavLink>
+                {profile?.username && <NavLink
+                    to={`/profile/${profile.username}`}
+                    className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-2xl transition-colors duration-150"
+                    activeClassName="bg-primary/8 text-foreground font-medium"
+                    onClick={onClose}
+                  >
+                    <UserIcon className="h-5 w-5" />
+                    <span className="text-sm">{t('header.myProfile')}</span>
+                  </NavLink>}
                 <NavLink
                   to="/favorites"
                   className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-2xl transition-colors duration-150"
@@ -172,7 +177,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                   <Heart className="h-5 w-5" />
                   <span className="text-sm">{t('header.favorites')}</span>
                 </NavLink>
-                <NavLink
+                {profile?.username && <NavLink
                   to="/profile/edit"
                   className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-2xl transition-colors duration-150"
                   activeClassName="bg-primary/8 text-foreground font-medium"
@@ -180,7 +185,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                 >
                   <Settings className="h-5 w-5" />
                   <span className="text-sm">{t('header.editProfile')}</span>
-                </NavLink>
+                </NavLink>}
                 <NavLink
                   to="/account/settings"
                   className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-2xl transition-colors duration-150"
@@ -190,7 +195,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                   <Settings className="h-5 w-5" />
                   <span className="text-sm">{t('header.accountSettings')}</span>
                 </NavLink>
-                {(profile.role === 'editor' || profile.role === 'admin') && (
+                {(profile?.role === 'editor' || profile?.role === 'admin') && (
                   <>
                     <NavLink
                       to="/editorial"

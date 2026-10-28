@@ -37,8 +37,36 @@ beforeEach(() => {
 });
 
 describe('Header', () => {
+  it('keeps public mobile navigation usable without exposing guest actions during auth initialization', async () => {
+    useAuthMock.mockReturnValue({ user: null, loading: true, signOut: vi.fn() });
+    useProfileByIdMock.mockReturnValue({ data: undefined, isPending: true });
+
+    renderWithProviders(<Header />);
+
+    expect(screen.queryByRole('button', { name: /login/i })).not.toBeInTheDocument();
+    const mobileMenu = screen.getByRole('button', { name: /toggle menu/i });
+    expect(mobileMenu).toBeEnabled();
+    await userEvent.click(mobileMenu);
+    expect(screen.getAllByRole('link', { name: /imports/i }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: /login/i })).not.toBeInTheDocument();
+  });
+
+  it.each([undefined, null])('keeps authenticated navigation without a resolved profile (%s)', async (profile) => {
+    useAuthMock.mockReturnValue({ user: { id: 'user-1', email: 'user@example.com' }, loading: false, signOut: vi.fn() });
+    useProfileByIdMock.mockReturnValue({ data: profile, isPending: profile === undefined });
+
+    renderWithProviders(<Header />);
+
+    expect(screen.queryByRole('button', { name: /login/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /my profile/i })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /toggle menu/i }));
+    expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /login/i })).not.toBeInTheDocument();
+  });
+
   it('shows login and submit buttons when user is not authenticated', () => {
-    useAuthMock.mockReturnValue({ user: null, signOut: vi.fn() });
+    useAuthMock.mockReturnValue({ user: null, loading: false, signOut: vi.fn() });
     useProfileByIdMock.mockReturnValue({ data: null });
 
     renderWithProviders(<Header />);
@@ -49,7 +77,7 @@ describe('Header', () => {
   });
 
   it('shows navigation links and avatar when user is authenticated', async () => {
-    useAuthMock.mockReturnValue({ user: { id: 'user-1', email: 'user@example.com' }, signOut: vi.fn() });
+    useAuthMock.mockReturnValue({ user: { id: 'user-1', email: 'user@example.com' }, loading: false, signOut: vi.fn() });
     useProfileByIdMock.mockReturnValue({ data: { id: 'user-1', username: 'user', display_name: 'User', avatar_url: null } });
 
     renderWithProviders(<Header />);
@@ -64,7 +92,7 @@ describe('Header', () => {
   });
 
   it('opens grouped mobile navigation from the hamburger menu', async () => {
-    useAuthMock.mockReturnValue({ user: { id: 'user-1', email: 'user@example.com' }, signOut: vi.fn() });
+    useAuthMock.mockReturnValue({ user: { id: 'user-1', email: 'user@example.com' }, loading: false, signOut: vi.fn() });
     useProfileByIdMock.mockReturnValue({ data: { id: 'user-1', username: 'user', display_name: 'User', avatar_url: null } });
 
     renderWithProviders(<Header />);
