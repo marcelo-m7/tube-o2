@@ -125,6 +125,7 @@ function HeaderIconButton({ children, label, onClick }: { children: ReactNode; l
 }
 
 interface NavigationActionsProps {
+  loading: boolean;
   user: ReturnType<typeof useAuth>["user"];
   profile: ReturnType<typeof useProfileById>["data"];
   unreadMessagesCount: number;
@@ -132,13 +133,15 @@ interface NavigationActionsProps {
   onSignOut: () => void;
 }
 
-function NavigationActions({ user, profile, unreadMessagesCount, unreadNotificationsCount, onSignOut }: NavigationActionsProps) {
+function NavigationActions({ loading, user, profile, unreadMessagesCount, unreadNotificationsCount, onSignOut }: NavigationActionsProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
     <div className="hidden shrink-0 items-center gap-1 xl:flex">
-      {user && profile ? (
+      {loading ? (
+        <span role="status" aria-label={t('common.loading')} className="h-9 w-36 animate-pulse rounded-full bg-muted" />
+      ) : user ? (
         <>
           <HeaderIconButton label={t('header.favorites')} onClick={() => navigate('/favorites')}>
             <Heart className="h-4 w-4" />
@@ -217,18 +220,19 @@ function NavigationActions({ user, profile, unreadMessagesCount, unreadNotificat
   );
 }
 
-function UserMenu({ user, profile, onSignOut }: { user: NonNullable<NavigationActionsProps["user"]>; profile: NonNullable<NavigationActionsProps["profile"]>; onSignOut: () => void }) {
+function UserMenu({ user, profile, onSignOut }: { user: NonNullable<NavigationActionsProps["user"]>; profile: NavigationActionsProps["profile"]; onSignOut: () => void }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const displayName = profile?.display_name || profile?.username || user.email || 'User';
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="ml-1 h-9 w-9 rounded-full ring-2 ring-transparent hover:ring-primary/40 focus-visible:ring-primary/50 focus-visible:outline-none transition-shadow duration-150" aria-label={t('header.myProfile')}>
           <Avatar className="h-9 w-9">
-            <AvatarImage src={profile.avatar_url || undefined} alt={profile.display_name || profile.username || 'User'} />
+            <AvatarImage src={profile?.avatar_url || undefined} alt={displayName} />
             <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
-              {(profile.display_name?.[0] ?? profile.username?.[0] ?? 'U').toUpperCase()}
+              {displayName[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </button>
@@ -237,31 +241,35 @@ function UserMenu({ user, profile, onSignOut }: { user: NonNullable<NavigationAc
         <DropdownMenuLabel className="font-normal py-2 px-2">
           <div className="flex items-center gap-3">
             <Avatar className="h-9 w-9">
-              <AvatarImage src={profile.avatar_url || undefined} />
+              <AvatarImage src={profile?.avatar_url || undefined} />
               <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
-                {(profile.display_name?.[0] ?? profile.username?.[0] ?? 'U').toUpperCase()}
+                {displayName[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col min-w-0">
-              <p className="text-sm font-bold leading-none truncate">{profile.display_name || profile.username}</p>
+              <p className="text-sm font-bold leading-none truncate">{displayName}</p>
               <p className="text-xs leading-none text-muted-foreground mt-1 truncate">{user.email}</p>
             </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="my-1" />
-        <DropdownMenuItem onClick={() => navigate(`/profile/${profile.username}`)} className="rounded-xl py-2">
-          <UserIcon className="mr-2 h-4 w-4" />
-          <span>{t('header.myProfile')}</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate('/profile/edit')} className="rounded-xl py-2">
-          <Settings className="mr-2 h-4 w-4" />
-          <span>{t('header.editProfile')}</span>
-        </DropdownMenuItem>
+        {profile?.username && (
+          <>
+            <DropdownMenuItem onClick={() => navigate(`/profile/${profile.username}`)} className="rounded-xl py-2">
+              <UserIcon className="mr-2 h-4 w-4" />
+              <span>{t('header.myProfile')}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/profile/edit')} className="rounded-xl py-2">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>{t('header.editProfile')}</span>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuItem onClick={() => navigate('/account/settings')} className="rounded-xl py-2">
           <KeyRound className="mr-2 h-4 w-4" />
           <span>{t('header.accountSettings')}</span>
         </DropdownMenuItem>
-        {(profile.role === 'editor' || profile.role === 'admin') && (
+        {(profile?.role === 'editor' || profile?.role === 'admin') && (
           <>
             <DropdownMenuItem onClick={() => navigate('/editorial')} className="rounded-xl py-2">
               <ShieldCheck className="mr-2 h-4 w-4" />
@@ -291,7 +299,7 @@ export const Header = () => {
   const { t } = useTranslation();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
   const { data: profile } = useProfileById(user?.id);
   const { data: unreadMessagesCount = 0 } = useUnreadMessagesCount();
   const { data: unreadNotificationsCount = 0 } = useUnreadNotificationsCount();
@@ -326,6 +334,7 @@ export const Header = () => {
         <div className="min-w-2 flex-1" />
 
         <NavigationActions
+          loading={authLoading}
           user={user}
           profile={profile}
           unreadMessagesCount={unreadMessagesCount}
@@ -343,6 +352,7 @@ export const Header = () => {
               aria-label={t('header.toggleMenu')}
               aria-expanded={isSheetOpen}
               aria-controls={MOBILE_MENU_ID}
+              disabled={authLoading}
             >
               <Menu className="h-5 w-5" />
               <span className="sr-only">{t('header.toggleMenu')}</span>
@@ -359,7 +369,7 @@ export const Header = () => {
               {t('header.menuDescription')}
             </SheetDescription>
           </SheetHeader>
-          <MobileNav
+          {!authLoading && <MobileNav
             user={user}
             profile={profile}
             unreadMessagesCount={unreadMessagesCount}
@@ -371,7 +381,7 @@ export const Header = () => {
             onSearchSubmit={handleSearchSubmit}
             languageSwitcher={<LanguageSwitcher compact />}
             themeToggle={<ThemeToggle />}
-          />
+          />}
         </SheetContent>
       </div>
       </Sheet>
