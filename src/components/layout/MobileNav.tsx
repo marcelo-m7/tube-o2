@@ -18,6 +18,7 @@ import { Profile } from '@/entities/profile/profile.types';
 import { mobileNavigationGroups } from './navigationItems';
 
 interface MobileNavProps {
+  loading: boolean;
   user: User | null;
   profile: Profile | null | undefined;
   unreadMessagesCount: number;
@@ -32,6 +33,7 @@ interface MobileNavProps {
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({
+  loading,
   user,
   profile,
   unreadMessagesCount,
@@ -136,7 +138,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({
 
           <Separator className="opacity-50 mx-4" />
 
-          {user ? (
+          {loading ? (
+            <div role="status" aria-label={t('common.loading')} className="mx-4 h-12 animate-pulse rounded-xl bg-muted" />
+          ) : user ? (
             <div className="space-y-4">
               <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-3 opacity-70">
                 {t('header.accountSettings')}
