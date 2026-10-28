@@ -114,4 +114,37 @@ describe('useAuth', () => {
     expect(screen.getByText('ready')).toBeInTheDocument();
     expect(screen.getByText('no-user')).toBeInTheDocument();
   });
+
+  it('initializes an anonymous session and handles a later sign-in', () => {
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+
+    const notify = onAuthStateChangeMock.mock.calls[0][0];
+    act(() => notify('INITIAL_SESSION', null));
+    expect(screen.getByText('ready')).toBeInTheDocument();
+    expect(screen.getByText('no-user')).toBeInTheDocument();
+
+    act(() => notify('SIGNED_IN', { user: { id: 'alice', email: 'alice@example.com' } }));
+    expect(screen.getByText('alice@example.com')).toBeInTheDocument();
+
+    act(() => notify('USER_UPDATED', { user: { id: 'alice', email: 'updated@example.com' } }));
+    expect(screen.getByText('updated@example.com')).toBeInTheDocument();
+  });
+
+  it('unsubscribes from auth events when the provider unmounts', () => {
+    const unsubscribe = vi.fn();
+    onAuthStateChangeMock.mockReturnValue({ data: { subscription: { unsubscribe } } });
+
+    const { unmount } = render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+
+    unmount();
+    expect(unsubscribe).toHaveBeenCalledOnce();
+  });
 });
