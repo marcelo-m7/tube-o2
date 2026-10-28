@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, render, waitFor, renderHook } from '@testing-library/react';
+import { act, screen, render, renderHook } from '@testing-library/react';
 import { AuthProvider, useAuth } from './useAuth';
 
 const signInWithEmailMock = vi.fn();
@@ -67,19 +67,51 @@ describe('useAuth', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it('sets loading to false after session check and allows signIn', async () => {
+  it('waits for INITIAL_SESSION before displaying an authenticated or signed-out state', () => {
     render(
       <AuthProvider>
         <TestConsumer />
       </AuthProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('ready')).toBeInTheDocument();
+    expect(screen.getByText('loading')).toBeInTheDocument();
+
+    act(() => {
+      onAuthStateChangeMock.mock.calls[0][0]('SIGNED_OUT', null);
     });
+
+    expect(screen.getByText('loading')).toBeInTheDocument();
+
+    act(() => {
+      onAuthStateChangeMock.mock.calls[0][0]('INITIAL_SESSION', {
+        user: { id: 'alice', email: 'alice@example.com' },
+      });
+    });
+
+    expect(screen.getByText('ready')).toBeInTheDocument();
+    expect(screen.getByText('alice@example.com')).toBeInTheDocument();
+    expect(getSessionMock).not.toHaveBeenCalled();
 
     screen.getByRole('button', { name: /sign-in/i }).click();
 
     expect(signInWithEmailMock).toHaveBeenCalledWith('test@example.com', 'secret');
+  });
+
+  it('keeps session changes in sync after hydration', () => {
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>,
+    );
+
+    const notify = onAuthStateChangeMock.mock.calls[0][0];
+    act(() => notify('INITIAL_SESSION', { user: { id: 'alice', email: 'alice@example.com' } }));
+    act(() => notify('TOKEN_REFRESHED', { user: { id: 'alice', email: 'alice@example.com' } }));
+
+    expect(screen.getByText('alice@example.com')).toBeInTheDocument();
+
+    act(() => notify('SIGNED_OUT', null));
+    expect(screen.getByText('ready')).toBeInTheDocument();
+    expect(screen.getByText('no-user')).toBeInTheDocument();
   });
 });
