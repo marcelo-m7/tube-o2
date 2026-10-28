@@ -352,7 +352,6 @@ export const Header = () => {
               aria-label={t('header.toggleMenu')}
               aria-expanded={isSheetOpen}
               aria-controls={MOBILE_MENU_ID}
-              disabled={authLoading}
             >
               <Menu className="h-5 w-5" />
               <span className="sr-only">{t('header.toggleMenu')}</span>
@@ -369,7 +368,8 @@ export const Header = () => {
               {t('header.menuDescription')}
             </SheetDescription>
           </SheetHeader>
-          {!authLoading && <MobileNav
+          <MobileNav
+            loading={authLoading}
             user={user}
             profile={profile}
             unreadMessagesCount={unreadMessagesCount}
@@ -381,7 +381,7 @@ export const Header = () => {
             onSearchSubmit={handleSearchSubmit}
             languageSwitcher={<LanguageSwitcher compact />}
             themeToggle={<ThemeToggle />}
-          />}
+          />
         </SheetContent>
       </div>
       </Sheet>
