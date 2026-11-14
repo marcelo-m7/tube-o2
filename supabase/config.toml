@@ -50,3 +50,6 @@ verify_jwt = true
 
 [functions.facodi-curriculum]
 verify_jwt = true
+
+[functions.facodi-submit-playlist]
+verify_jwt = true
