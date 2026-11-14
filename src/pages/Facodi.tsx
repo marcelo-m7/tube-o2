@@ -99,7 +99,7 @@ export default function Facodi() {
       return;
     }
 
-    navigate('/submit');
+    navigate('/facodi/playlists/submit');
   };
 
   return (
@@ -121,7 +121,7 @@ export default function Facodi() {
                 {t('facodiPage.hero.primaryCta')}
                 <BookOpen className="h-5 w-5" />
               </Button>
-              <Button size="xl" variant="outline" className="h-14 justify-between px-6" onClick={() => navigate('/submit')}>
+              <Button size="xl" variant="outline" className="h-14 justify-between px-6" onClick={() => navigate('/facodi/playlists/submit')}>
                 {t('facodiPage.hero.secondaryCta')}
                 <Send className="h-5 w-5" />
               </Button>
