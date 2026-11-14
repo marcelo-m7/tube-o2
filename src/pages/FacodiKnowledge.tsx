@@ -86,7 +86,7 @@ export default function FacodiKnowledge(){
       :<>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap gap-2" role="group" aria-label={t('facodiKnowledge.programme')}>
-            {references.map(ref=><Button key={ref.id} aria-pressed={ref.id===activeReference.id} variant={ref.id===activeReference.id?'default':'outline'} onClick={()=>{setSelected(ref.id);setQuery('');}} className="max-w-full truncate">{ref.programme} · {ref.year}</Button>)}
+            {references.map(ref=><Button key={ref.id} aria-pressed={ref.id===activeReference.id} variant={ref.id===activeReference.id?'default':'outline'} onClick={()=>{setSelected(ref.id);setQuery('');}} className="max-w-full truncate">{ref.programme}{ref.year ? ` · ${ref.year}` : ''}</Button>)}
           </div>
           {activeReference.sourceUrl&&<a href={activeReference.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-foreground underline-offset-4 hover:underline">{t('facodiKnowledge.officialSource')}<ArrowUpRight className="h-4 w-4"/></a>}
         </div>
