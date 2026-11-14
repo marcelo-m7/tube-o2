@@ -12,6 +12,106 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
+  // FACODI academic schema: typed slice used by the independent curriculum catalogue.
+  // Extend from generated Supabase types when regenerating all exposed schemas.
+  facodi: {
+    Tables: {
+      courses: {
+        Row: {
+          id: string
+          code: string | null
+          title: string
+          institution: string | null
+          source_url: string | null
+          status: string
+          published: boolean
+        }
+        Insert: {
+          id?: string
+          code?: string | null
+          title: string
+          institution?: string | null
+          source_url?: string | null
+          status?: string
+          published?: boolean
+        }
+        Update: {
+          id?: string
+          code?: string | null
+          title?: string
+          institution?: string | null
+          source_url?: string | null
+          status?: string
+          published?: boolean
+        }
+        Relationships: []
+      }
+      curricular_units: {
+        Row: {
+          id: string
+          course_id: string
+          code: string | null
+          title: string
+          year: number | null
+          semester: number | null
+          ects: number | null
+          position: number | null
+          status: string
+          published: boolean
+        }
+        Insert: {
+          id?: string
+          course_id: string
+          code?: string | null
+          title: string
+          year?: number | null
+          semester?: number | null
+          ects?: number | null
+          position?: number | null
+          status?: string
+          published?: boolean
+        }
+        Update: {
+          id?: string
+          course_id?: string
+          code?: string | null
+          title?: string
+          year?: number | null
+          semester?: number | null
+          ects?: number | null
+          position?: number | null
+          status?: string
+          published?: boolean
+        }
+        Relationships: []
+      }
+      unit_videos: {
+        Row: {
+          id: string
+          curricular_unit_id: string
+          video_id: string
+          position: number
+        }
+        Insert: {
+          id?: string
+          curricular_unit_id: string
+          video_id: string
+          position?: number
+        }
+        Update: {
+          id?: string
+          curricular_unit_id?: string
+          video_id?: string
+          position?: number
+        }
+        Relationships: []
+      }
+    }
+    Views: {}
+    Functions: {}
+    Enums: {}
+    CompositeTypes: {}
+  }
   public: {
     Tables: {
       ai_enrichments: {
