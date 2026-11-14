@@ -34,6 +34,8 @@ const Community = lazy(() => import("./pages/Community"));
 const Curation = lazy(() => import("./pages/Curation"));
 const Facodi = lazy(() => import("./pages/Facodi"));
 const FacodiKnowledge = lazy(() => import("./pages/FacodiKnowledge"));
+const FacodiPlaylistSubmit = lazy(() => import("./pages/FacodiPlaylistSubmit"));
+const FacodiPlaylistReview = lazy(() => import("./pages/FacodiPlaylistReview"));
 const About = lazy(() => import("./pages/About"));
 const Rules = lazy(() => import("./pages/Rules"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -89,6 +91,8 @@ const App = () => (
         <Route path="/curadoria" element={<Curation />} />
         <Route path="/facodi" element={<Facodi />} />
         <Route path="/facodi/knowledge" element={<FacodiKnowledge />} />
+        <Route path="/facodi/playlists/submit" element={<FacodiPlaylistSubmit />} />
+        <Route path="/facodi/playlists/review" element={<FacodiPlaylistReview />} />
         <Route path="/about" element={<About />} />
         <Route path="/rules" element={<Rules />} />
         <Route path="/contact" element={<Contact />} />
