@@ -32,16 +32,16 @@ After applying migrations, verify:
 select count(*) from facodi.courses;          -- 2
 select count(*) from facodi.curricular_units; -- 87
 select count(*) from public.videos;           -- 794 at migration time
-select count(*) from facodi.unit_videos;      -- 0 until curated
+select count(*) from facodi.unit_videos;      -- 409 imported candidates (14 Nov 2026)
 select count(*) from pg_tables
 where schemaname='facodi' and tablename like 'odoo%'; -- 0
 ```
 
-Check with three API roles: unauthenticated; authenticated learner; authenticated editor. Learners must not see private draft courses, another learner's enrolments/progress, or editor-only mappings. Editorial users should be able to read and manage unpublished catalogue entries. The absence of populated `unit_videos` means video associations have not yet been curated.
+Check with three API roles: unauthenticated; authenticated learner; authenticated editor. Learners must not see private draft courses, another learner's enrolments/progress, or editor-only mappings. Editorial users should be able to read and manage unpublished catalogue entries. On 2026-11-14, 409 playlist/video associations (382 unique Tube videos) were imported into `facodi.unit_videos` with `metadata.review_status='pending_review'`; 15 curricular units have candidate videos. The public RLS policy requires `review_status='approved'`, an active/published unit and an active/published course. None of these links is currently editorially approved.
 
 ## Next controlled cleanup
 
 1. Validate/replace the 87 `mock_seed` units before publication.
-2. Map approved educational videos using `facodi.unit_videos` and build editorial controls.
+2. Review the 409 proposed playlist/video links (including unrelated titles), approve or reject each and build editorial controls; no candidate is automatically approved.
 3. Inventory clients still reading `public.courses`, `public.units`, and Odoo-era FACODI tables/functions. Migrate them before any further `DROP` operations.
 4. Extend TypeScript schema types from Supabase's multi-schema generator; the current typed slice covers only the 3 FACODI tables read by the curriculum UI.
