@@ -85,6 +85,74 @@ export type Database = {
         }
         Relationships: []
       }
+      playlists: {
+        Row: {
+          id: string
+          course_id: string
+          curricular_unit_id: string
+          submitted_by: string
+          title: string
+          description: string | null
+          language: string
+          youtube_playlist_id: string
+          source_url: string
+          status: string
+          import_status: string
+          reviewed_by: string | null
+          reviewed_at: string | null
+          review_note: string | null
+          submitted_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          course_id: string
+          curricular_unit_id: string
+          submitted_by: string
+          title: string
+          description?: string | null
+          language?: string
+          youtube_playlist_id: string
+          status?: string
+          import_status?: string
+        }
+        Update: {
+          status?: string
+          import_status?: string
+          review_note?: string | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      playlist_items: {
+        Row: {
+          id: string
+          playlist_id: string
+          youtube_video_id: string
+          video_id: string | null
+          position: number
+          review_status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          playlist_id: string
+          youtube_video_id: string
+          video_id?: string | null
+          position: number
+          review_status?: string
+        }
+        Update: {
+          video_id?: string | null
+          position?: number
+          review_status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       unit_videos: {
         Row: {
           id: string
@@ -108,7 +176,16 @@ export type Database = {
       }
     }
     Views: {}
-    Functions: {}
+    Functions: {
+      review_playlist: {
+        Args: { p_playlist_id: string; p_decision: string; p_review_note?: string | null }
+        Returns: string
+      }
+      reconcile_playlist_items: {
+        Args: { p_playlist_id: string }
+        Returns: number
+      }
+    }
     Enums: {}
     CompositeTypes: {}
   }
